@@ -1,5 +1,41 @@
 import { useState } from 'react'
 
+const AnecdoteOfTheDay = ({anecdotes, points, selected}) => {
+  return (
+    <div>
+      <h2>Anecdote of the day</h2>
+      <AnecdoteBody text={anecdotes[selected]} votes={points[selected]} />
+    </div>
+  )
+}
+
+const MostVotesAnecdote = (props) => {
+  const { anecdotes, points } = props
+  let maxIndex = 0
+  for (let i = 0; i < points.length; i++) {
+    if (points[i] > points[maxIndex]) {
+      maxIndex = i
+    }
+  }
+  return (
+    <div>
+      <h2>Anecdote with most votes</h2>
+      <AnecdoteBody text={anecdotes[maxIndex]} votes={points[maxIndex]} />
+    </div>
+  )
+}
+
+const AnecdoteBody = (props) => {
+  const {text, votes} = props
+  return (
+    <div>
+        {text}
+        <br/>
+        has {votes} votes
+    </div>
+  )
+}
+
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -11,12 +47,24 @@ const App = () => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
     'The only way to go fast, is to go well.'
   ]
-   
   const [selected, setSelected] = useState(0)
-
+  const [points, setPoints] = useState(Array(anecdotes.length).fill(0))
+  
+  const handleNextAnecdote = () => {
+    setSelected(Math.floor(Math.random() * anecdotes.length))
+  }
+  const handleVote = () => {
+    const updPoints = [...points]
+    updPoints[selected] += 1
+    setPoints(updPoints)
+  }
+    
   return (
     <div>
-      {anecdotes[selected]}
+      <AnecdoteOfTheDay anecdotes={anecdotes} points={points} selected={selected} />
+      <button onClick={handleVote}>vote</button>
+      <button onClick={handleNextAnecdote}>next anecdote</button>
+      <MostVotesAnecdote anecdotes={anecdotes} points={points} />
     </div>
   )
 }
