@@ -5,11 +5,9 @@ const Filter = ({ persons, setFilteredPersons }) => {
     const handleChangeFilterName = (event) => {
         setFilterName(event.target.value)
         const filter = event.target.value.toLowerCase()
-        setFilteredPersons(persons.reduce((acc, cur) => {
-            if (cur.name.toLowerCase().indexOf(filter) >= 0)
-                return acc.concat(cur)
-            return acc
-        }, []))
+        setFilteredPersons(persons.filter(person => {
+            return person.name.toLowerCase().indexOf(filter) >= 0
+        }))
     }
     return (
         <p>
