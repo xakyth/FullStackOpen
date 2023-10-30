@@ -29,7 +29,6 @@ function App() {
     setCountriesToShow([].concat(country))
   }
 
-  console.log('import.meta.env.VITE_OPENWEATHER_KEY', import.meta.env.VITE_OPENWEATHER_KEY)
 
   return (
     <div>      
