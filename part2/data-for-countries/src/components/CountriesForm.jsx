@@ -1,4 +1,4 @@
-const CountriesForm = ({countries, allData}) => {
+const CountriesForm = ({countries, allData, handleCountryChoose}) => {
     if (countries.length > 10) {
         return (
             <div>
@@ -7,7 +7,6 @@ const CountriesForm = ({countries, allData}) => {
         )
     } else if (countries.length == 1) {
         const countryData = allData.find(country => country.name.common === countries[0])
-        console.log('countryData', countryData)
         return (
             <div>
                 <h1>{countryData.name.common}</h1>
@@ -26,7 +25,10 @@ const CountriesForm = ({countries, allData}) => {
     } else {
         return (
             <div>
-                {countries.map(country => <div key={country}>{country}</div>)}
+                {countries.map(country => <div key={country}>
+                        {country}
+                        <button onClick={() => handleCountryChoose(country)}>show</button>
+                    </div>)}
             </div>
         )
     }
