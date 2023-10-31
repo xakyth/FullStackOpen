@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react"
 import CountryInfo from "./CountryInfo"
 
 const CountriesForm = ({countries, handleCountryChoose}) => {
-    console.log('countries', countries)
     if (countries.length > 10) {
         return (
             <div>
@@ -10,7 +8,9 @@ const CountriesForm = ({countries, handleCountryChoose}) => {
             </div>
         )
     } else if (countries.length == 1) {
-        <CountryInfo />
+        return (
+            <CountryInfo country={countries[0]} />
+        )
     } else {
         return (
             <div>

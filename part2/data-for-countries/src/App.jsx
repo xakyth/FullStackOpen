@@ -8,7 +8,7 @@ function App() {
   const [countries, setCountries] = useState([])
   const [countriesToShow, setCountriesToShow] = useState([])
 
-  useEffect(() => { //move to services countriesApi
+  useEffect(() => { 
     countryService.getAll().then(response => { 
       setCountries(response.map(countryData => countryData.name.common))
     })
