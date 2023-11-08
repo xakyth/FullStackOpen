@@ -46,6 +46,10 @@ const PersonForm = ({persons, setPersons, setNotificationMessage}) => {
                     setNotificationMessage({ text: `Added ${returnedPerson.name}`, isError: false })
                     setTimeout(() => setNotificationMessage(null), 5000)
                 })
+                .catch(error => {
+                    setNotificationMessage({ text: error.response.data.error, isError: true })
+                    setTimeout(() => setNotificationMessage(null), 5000)
+                })
         }
     }
 
