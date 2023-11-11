@@ -6,18 +6,10 @@ const mongoose = require('mongoose');
 const logger = require('./utils/logger');
 const config = require('./utils/config');
 const middleware = require('./utils/middleware');
+const Blog = require('./models/blog');
 
 mongoose.set('strictQuery', false);
 require('dotenv').config();
-
-const blogSchema = new mongoose.Schema({
-  title: String,
-  author: String,
-  url: String,
-  likes: Number,
-});
-
-const Blog = mongoose.model('Blog', blogSchema);
 
 const mongoUrl = config.MONGODB_URI;
 mongoose.connect(mongoUrl);
