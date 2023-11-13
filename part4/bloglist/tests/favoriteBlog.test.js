@@ -3,7 +3,7 @@ const blogs = require('../utils/blogs_for_test');
 
 describe('favorite blog', () => {
   test('array of blogs is empty', () => {
-    expect(favoriteBlog([])).toBe(null);
+    expect(favoriteBlog([])).toBe(undefined);
   });
   test('array with 1 blog', () => {
     expect(favoriteBlog([blogs[0]])).toEqual(blogs[0]);
