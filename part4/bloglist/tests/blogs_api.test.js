@@ -46,3 +46,18 @@ test('successfull creation of a new blog', async () => {
   const urls = getResponse.body.map((b) => b.url);
   expect(urls).toContain(newBlog.url);
 });
+
+test('create blog without likes specified', async () => {
+  const newBlog = {
+    title: 'Testing the backend',
+    author: 'Matti Luukkainen',
+    url: 'https://fullstackopen.com/en/part4/testing_the_backend',
+  };
+
+  const postResponse = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+  expect(postResponse.body.likes).toEqual(0);
+});
