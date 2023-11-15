@@ -61,3 +61,33 @@ test('create blog without likes specified', async () => {
     .expect('Content-Type', /application\/json/);
   expect(postResponse.body.likes).toEqual(0);
 });
+
+test('creation of blog without title or url will return 400 Bad Request', async () => {
+  const blogWithoutTitle = {
+    author: 'Matti Luukkainen',
+    url: 'https://fullstackopen.com/en/part4/testing_the_backend',
+  };
+  let postRequest = await api
+    .post('/api/blogs')
+    .send(blogWithoutTitle)
+    .expect(400);
+  expect(postRequest.body.message).toEqual('title cannot be empty');
+  const blogWithoutUrl = {
+    title: 'Testing the backend',
+    author: 'Matti Luukkainen',
+  };
+
+  postRequest = await api
+    .post('/api/blogs')
+    .send(blogWithoutUrl)
+    .expect(400);
+  expect(postRequest.body.message).toEqual('url cannot be empty');
+
+  const blogWithoutTitleAndUrl = {
+    author: 'Matti Luukkainen',
+  };
+  postRequest = await api
+    .post('/api/blogs')
+    .send(blogWithoutTitleAndUrl)
+    .expect(400);
+});

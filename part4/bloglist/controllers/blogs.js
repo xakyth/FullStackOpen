@@ -9,6 +9,13 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response) => {
   const blog = request.body;
   blog.likes = blog.likes || 0;
+  if (!blog.title) {
+    return response.status(400).json({ message: 'title cannot be empty' });
+  }
+  if (!blog.url) {
+    return response.status(400).json({ message: 'url cannot be empty' });
+  }
+
   const blogObject = new Blog(request.body);
 
   const result = await blogObject.save();
