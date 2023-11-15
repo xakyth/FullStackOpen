@@ -19,3 +19,10 @@ test('get all blogs in json format', async () => {
     .expect('Content-Type', /application\/json/);
   expect(response.body).toHaveLength(testHelper.initialBlogs.length);
 });
+
+test('unique identifier is "id"', async () => {
+  const response = await api.get('/api/blogs');
+  response.body.forEach((b) => {
+    expect(b.id).toBeDefined();
+  });
+});
