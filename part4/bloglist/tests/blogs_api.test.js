@@ -110,6 +110,19 @@ describe('initially some blogs saved', () => {
       const urls = blogsAtEnd.map((b) => b.url);
       expect(urls).not.toContain(blogToDelete.url);
     });
+    test('non valid id returns 400', async () => {
+      let getResponse = await api.get('/api/blogs');
+      const blogsAtStart = getResponse.body;
+
+      await api
+        .delete('/api/blogs/134513xq')
+        .expect(400);
+
+      getResponse = await api.get('/api/blogs');
+      const blogsAtEnd = getResponse.body;
+
+      expect(blogsAtStart).toHaveLength(blogsAtEnd.length);
+    });
   });
 });
 
