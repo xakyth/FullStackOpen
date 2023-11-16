@@ -6,6 +6,16 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs);
 });
 
+blogsRouter.get('/:id', async (request, response, next) => {
+  const { id } = request.params;
+  try {
+    const blog = await Blog.findById(id);
+    response.status(200).json(blog);
+  } catch (exception) {
+    next();
+  }
+});
+
 blogsRouter.post('/', async (request, response) => {
   const blog = request.body;
   blog.likes = blog.likes || 0;
@@ -30,6 +40,18 @@ blogsRouter.delete('/:id', async (request, response, next) => {
     return next(exception);
   }
   response.status(204).end();
+});
+
+blogsRouter.put('/:id', async (request, response, next) => {
+  const { id } = request.params;
+  const blog = request.body;
+
+  try {
+    await Blog.findByIdAndUpdate(id, blog, { runValidators: true });
+    response.status(200).json(blog);
+  } catch (exception) {
+    return next(exception);
+  }
 });
 
 module.exports = blogsRouter;

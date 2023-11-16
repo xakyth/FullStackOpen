@@ -124,6 +124,28 @@ describe('initially some blogs saved', () => {
       expect(blogsAtStart).toHaveLength(blogsAtEnd.length);
     });
   });
+  describe('update information of an individual blog post', () => {
+    test('properties can be updated', async () => {
+      const notesAtStart = await api.get('/api/blogs');
+      const blogToBeUpdated = notesAtStart.body[0];
+      const updatedBlog = {
+        ...blogToBeUpdated,
+        likes: blogToBeUpdated.likes + 1,
+        author: 'I\'m a new author',
+        url: 'site moved',
+        title: 'Title has been screwed',
+      };
+
+      await api
+        .put(`/api/blogs/${blogToBeUpdated.id}`)
+        .send(updatedBlog)
+        .expect(200);
+
+      const getResponse = await api.get(`/api/blogs/${blogToBeUpdated.id}`);
+      const savedUpdatedBlog = getResponse.body;
+      expect(updatedBlog).toEqual(savedUpdatedBlog);
+    });
+  });
 });
 
 afterAll(async () => {
