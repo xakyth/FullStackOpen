@@ -93,6 +93,24 @@ describe('initially some blogs saved', () => {
         .expect(400);
     });
   });
+  describe('deletion of a blog', () => {
+    test('blog can be deleted when accessed by id', async () => {
+      let getResponse = await api.get('/api/blogs');
+      const blogsAtStart = getResponse.body;
+
+      const blogToDelete = blogsAtStart[0];
+      await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .expect(204);
+
+      getResponse = await api.get('/api/blogs');
+      const blogsAtEnd = getResponse.body;
+      expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1);
+
+      const urls = blogsAtEnd.map((b) => b.url);
+      expect(urls).not.toContain(blogToDelete.url);
+    });
+  });
 });
 
 afterAll(async () => {
