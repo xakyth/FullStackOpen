@@ -1,4 +1,5 @@
 const supertest = require('supertest');
+const mongoose = require('mongoose');
 const app = require('../app');
 const Blog = require('../models/blog');
 const testHelper = require('./blogs_api_helper');
@@ -7,9 +8,7 @@ const api = supertest(app);
 
 beforeEach(async () => {
   await Blog.deleteMany({});
-  const blogObjects = testHelper.initialBlogs.map((b) => new Blog(b));
-  const promiseArray = blogObjects.map((b) => b.save());
-  await Promise.all(promiseArray);
+  await Blog.insertMany(testHelper.initialBlogs);
 });
 
 test('get all blogs in json format', async () => {
@@ -90,4 +89,8 @@ test('creation of blog without title or url will return 400 Bad Request', async 
     .post('/api/blogs')
     .send(blogWithoutTitleAndUrl)
     .expect(400);
+});
+
+afterAll(async () => {
+  await mongoose.connection.close();
 });
