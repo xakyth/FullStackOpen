@@ -27,6 +27,17 @@ describe('initially some blogs saved', () => {
     });
   });
 
+  test('single block can be fetched via get', async () => {
+    let response = await api.get('/api/blogs');
+    const initialBlogs = response.body;
+    response = await api
+      .get(`/api/blogs/${initialBlogs[0].id}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+    const blog = response.body;
+    expect(blog).toEqual(initialBlogs[0]);
+  });
+
   describe('addition of a blog', () => {
     test('successfull creation of a new blog', async () => {
       const newBlog = {
