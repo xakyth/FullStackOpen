@@ -11,6 +11,7 @@ userSchema.set('toJSON', {
     ret.id = doc._id.toString();
     delete ret._id;
     delete ret.passwordHash;
+    delete ret.__v;
   },
 });
 
