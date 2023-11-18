@@ -13,6 +13,13 @@ describe('initially there are some users in DB', () => {
   test('dummy test', async () => {
     expect(1).toEqual(1);
   });
+  test('can get all the users', async () => {
+    const getResponse = await api
+      .get('/api/users')
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+    expect(getResponse.body).toHaveLength(helper.users.length);
+  });
   test('can create a new user', async () => {
     const usersAtStart = await helper.usersInDb();
     const newUser = {
