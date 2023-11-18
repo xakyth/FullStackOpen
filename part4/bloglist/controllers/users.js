@@ -15,8 +15,12 @@ userRouter.post('/', async (request, response, next) => {
     name,
     passwordHash,
   });
-  await userObject.save();
-  response.status(201).json(userObject);
+  try {
+    await userObject.save();
+    response.status(201).json(userObject);
+  } catch (exception) {
+    next(exception);
+  }
 });
 
 module.exports = userRouter;

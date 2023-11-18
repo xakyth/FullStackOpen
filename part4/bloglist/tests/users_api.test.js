@@ -20,23 +20,42 @@ describe('initially there are some users in DB', () => {
       .expect('Content-Type', /application\/json/);
     expect(getResponse.body).toHaveLength(helper.users.length);
   });
-  test('can create a new user', async () => {
-    const usersAtStart = await helper.usersInDb();
-    const newUser = {
-      username: 'kinowar',
-      name: 'Denis Vasilyev',
-      password: '953457gwenj_gXX',
-    };
-    await api
-      .post('/api/users')
-      .send(newUser)
-      .expect(201)
-      .expect('Content-Type', /application\/json/);
 
-    const usersAtEnd = await helper.usersInDb();
-    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1);
-    expect(
-      usersAtEnd.find((user) => user.username === newUser.username)
-    ).toBeDefined();
+  describe('user creation', () => {
+    test('can create a new user', async () => {
+      const usersAtStart = await helper.usersInDb();
+      const newUser = {
+        username: 'kinowar',
+        name: 'Denis Vasilyev',
+        password: '953457gwenj_gXX',
+      };
+      await api
+        .post('/api/users')
+        .send(newUser)
+        .expect(201)
+        .expect('Content-Type', /application\/json/);
+  
+      const usersAtEnd = await helper.usersInDb();
+      expect(usersAtEnd).toHaveLength(usersAtStart.length + 1);
+      expect(
+        usersAtEnd.find((user) => user.username === newUser.username)
+      ).toBeDefined();
+    });
+    test('cannot create user with username less than 3 characters', async () => {
+        const usersAtStart = await helper.usersInDb();
+        const newUser = {
+          username: 'ki',
+          name: 'Denis Vasilyev',
+          password: '953457gwenj_gXX',
+        };
+        await api
+          .post('/api/users')
+          .send(newUser)
+          .expect(400)
+          .expect('Content-Type', /application\/json/);
+        
+        const usersAtEnd = await helper.usersInDb();
+        expect(usersAtStart).toHaveLength(usersAtEnd.length);
+    });
   });
 });
