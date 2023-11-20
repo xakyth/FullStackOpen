@@ -1,6 +1,15 @@
+const jwt = require('jsonwebtoken');
 const blogsRouter = require('express').Router();
 const Blog = require('../models/blog');
 const User = require('../models/user');
+
+const getTokenFrom = (request) => {
+  const authorization = request.get('authorization');
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '');
+  }
+  return null;
+};
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', ['username', 'name']);
@@ -17,7 +26,7 @@ blogsRouter.get('/:id', async (request, response, next) => {
   }
 });
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', async (request, response, next) => {
   const blog = request.body;
   blog.likes = blog.likes || 0;
   if (!blog.title) {
@@ -27,28 +36,27 @@ blogsRouter.post('/', async (request, response) => {
     return response.status(400).json({ message: 'url cannot be empty' });
   }
 
-  //TODO : this is code for dev, replace via real creator, not random
-  const usersQuery = await User.find({});
-  const users = usersQuery.map((user) => user.toJSON());
-  const blogCreatorIndex = Math.round(Math.random() * (users.length-1));
+  const token = getTokenFrom(request);
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(token, process.env.JWT_SECRET); 
+  } catch (error) {
+    return next(error);
+  }
+  if (!decodedToken) {
+    return response.status(401).json({ error: 'token invalid' });
+  }
+  const user = await User.findById(decodedToken.id);
+  
   const blogObject = new Blog({
     ...request.body,
-    user: users[blogCreatorIndex].id,
+    user: user._id,
   });
   await blogObject.save();
-  const userObject = await User.findByIdAndUpdate(
-    users[blogCreatorIndex].id,
-    {
-      ...users[blogCreatorIndex],
-      blogs: users[blogCreatorIndex].blogs.concat(blogObject._id),
-    }, 
-    {
-      runValidators: true,
-      strictQuery: true,
-    }
-  )
-  console.log('userObject', userObject);
-  
+  user.blogs = user.blogs.concat(blogObject._id);
+  user.save();
+  console.log('user', user);
+
   const result = await blogObject.save();
   response.status(201).json(result);
 });
