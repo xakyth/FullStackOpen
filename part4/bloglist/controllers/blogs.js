@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const middleware = require('../utils/middleware');
 const blogsRouter = require('express').Router();
 const Blog = require('../models/blog');
 const User = require('../models/user');
@@ -18,7 +19,7 @@ blogsRouter.get('/:id', async (request, response, next) => {
   }
 });
 
-blogsRouter.post('/', async (request, response, next) => {
+blogsRouter.post('/', middleware.userExtractor, async (request, response, next) => {
   const blog = request.body;
   blog.likes = blog.likes || 0;
   if (!blog.title) {
@@ -28,50 +29,31 @@ blogsRouter.post('/', async (request, response, next) => {
     return response.status(400).json({ message: 'url cannot be empty' });
   }
 
-  const token = request.token;
-  let decodedToken;
-  try {
-    decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-  } catch (error) {
-    return next(error);
-  }
-  if (!decodedToken) {
-    return response.status(401).json({ error: 'token invalid' });
-  }
-  const user = await User.findById(decodedToken.id);
+  const user = request.user;
+  const userObj = await User.findById(user.id);
 
   const blogObject = new Blog({
     ...request.body,
-    user: user._id,
+    user: userObj._id,
   });
   await blogObject.save();
-  user.blogs = user.blogs.concat(blogObject._id);
-  await user.save();
+  userObj.blogs = userObj.blogs.concat(blogObject._id);
+  await userObj.save();
 
   const result = await blogObject.save();
   response.status(201).json(result);
 });
 
-blogsRouter.delete('/:id', async (request, response, next) => {
-  //TODO: delete blog's ref from User.blogs also
+blogsRouter.delete('/:id', middleware.userExtractor, async (request, response, next) => {
   const { id } = request.params;
-  const token = request.token;
-  let decodedToken;
-  try {
-    decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-  } catch (error) {
-    return next(error);
-  }
-  if (!decodedToken) {
-    return response.status(401).json({ error: 'invalid token' });
-  }
+  const user = request.user;
 
   const blog = await Blog.findById(id);
   if (!blog) {
     return response.status(204).end();
   }
-  const user = await User.findById(decodedToken.id);
-  if (user._id.toString() === blog.user.toString()) {
+  const userObj = await User.findById(user.id);
+  if (userObj._id.toString() === blog.user.toString()) {
     try {
       await blog.deleteOne();
       response.status(204).end();
