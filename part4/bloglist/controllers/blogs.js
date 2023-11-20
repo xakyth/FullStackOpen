@@ -31,7 +31,7 @@ blogsRouter.post('/', async (request, response, next) => {
   const token = request.token;
   let decodedToken;
   try {
-    decodedToken = jwt.verify(token, process.env.JWT_SECRET); 
+    decodedToken = jwt.verify(token, process.env.JWT_SECRET);
   } catch (error) {
     return next(error);
   }
@@ -39,7 +39,7 @@ blogsRouter.post('/', async (request, response, next) => {
     return response.status(401).json({ error: 'token invalid' });
   }
   const user = await User.findById(decodedToken.id);
-  
+
   const blogObject = new Blog({
     ...request.body,
     user: user._id,
@@ -55,12 +55,32 @@ blogsRouter.post('/', async (request, response, next) => {
 blogsRouter.delete('/:id', async (request, response, next) => {
   //TODO: delete blog's ref from User.blogs also
   const { id } = request.params;
+  const token = request.token;
+  let decodedToken;
   try {
-    await Blog.findByIdAndDelete(id);
-  } catch (exception) {
-    return next(exception);
+    decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    return next(error);
   }
-  response.status(204).end();
+  if (!decodedToken) {
+    return response.status(401).json({ error: 'invalid token' });
+  }
+
+  const blog = await Blog.findById(id);
+  if (!blog) {
+    return response.status(204).end();
+  }
+  const user = await User.findById(decodedToken.id);
+  if (user._id.toString() === blog.user.toString()) {
+    try {
+      await blog.deleteOne();
+      response.status(204).end();
+    } catch (error) {
+      return next(error);
+    }
+  } else {
+    response.status(403).json({ error: 'no access to delete the blog' });
+  }
 });
 
 blogsRouter.put('/:id', async (request, response, next) => {
