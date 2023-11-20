@@ -4,7 +4,7 @@ const User = require('../models/user');
 const { default: mongoose } = require('mongoose');
 
 userRouter.get('/', async (request, response) => {
-  const users = await User.find({});
+  const users = await User.find({}).populate('blogs', ['url', 'title', 'author']);
   response.json(users);
 });
 
