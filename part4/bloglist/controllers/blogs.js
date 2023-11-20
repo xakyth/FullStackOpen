@@ -3,14 +3,6 @@ const blogsRouter = require('express').Router();
 const Blog = require('../models/blog');
 const User = require('../models/user');
 
-const getTokenFrom = (request) => {
-  const authorization = request.get('authorization');
-  if (authorization && authorization.startsWith('Bearer ')) {
-    return authorization.replace('Bearer ', '');
-  }
-  return null;
-};
-
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', ['username', 'name']);
   response.json(blogs);
@@ -36,7 +28,7 @@ blogsRouter.post('/', async (request, response, next) => {
     return response.status(400).json({ message: 'url cannot be empty' });
   }
 
-  const token = getTokenFrom(request);
+  const token = request.token;
   let decodedToken;
   try {
     decodedToken = jwt.verify(token, process.env.JWT_SECRET); 
@@ -54,8 +46,7 @@ blogsRouter.post('/', async (request, response, next) => {
   });
   await blogObject.save();
   user.blogs = user.blogs.concat(blogObject._id);
-  user.save();
-  console.log('user', user);
+  await user.save();
 
   const result = await blogObject.save();
   response.status(201).json(result);
