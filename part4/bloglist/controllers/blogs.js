@@ -31,6 +31,9 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response, next) 
 
   const user = request.user;
   const userObj = await User.findById(user.id);
+  if (!userObj) {
+    return response.status(404).json({ messge: 'no such user' });
+  }
 
   const blogObject = new Blog({
     ...request.body,
