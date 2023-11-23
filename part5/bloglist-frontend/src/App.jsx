@@ -16,6 +16,13 @@ const App = () => {
     )
   }, [])
 
+  useEffect(() => {
+    const storedLogIn = loginService.getLoggedUser();
+    if (storedLogIn) {
+      setUser(storedLogIn)
+    }
+  }, [])
+
   const handleUsernameChange = ({ target }) => {
     setUsername(target.value)
   }
@@ -28,8 +35,13 @@ const App = () => {
     event.preventDefault()
     const user = await loginService.login({ username, password })
     setUser(user)
+    loginService.setLoggedUser(user)
     setUsername('')
     setPassword('')
+  }
+
+  const handleLogout = () => {
+    loginService.clearLoggedUser()
   }
 
   if (user === null) {
@@ -48,6 +60,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
