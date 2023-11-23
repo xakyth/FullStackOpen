@@ -2,3 +2,4 @@ node_modules/
 part4/bloglist/.env
 part4/bloglist/.prettierrc
 part4/bloglist/temp.js
+part5/bloglist-frontend/.prettierrc
