@@ -33,11 +33,15 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    const user = await loginService.login({ username, password })
-    setUser(user)
-    loginService.setLoggedUser(user)
-    setUsername('')
-    setPassword('')
+    try {
+      const user = await loginService.login({ username, password })
+      setUser(user)
+      loginService.setLoggedUser(user)
+      setUsername('')
+      setPassword('')
+    } catch (exception) {
+      console.log('wrong credentials')
+    }
   }
 
   const handleLogout = () => {
