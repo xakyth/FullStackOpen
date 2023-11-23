@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Login from './components/Login'
 import blogService from './services/blogs'
+import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -22,22 +24,29 @@ const App = () => {
     setPassword(target.value)
   }
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault()
-    console.log('trying to log in with', username, password)
-    //TODO: implementation, add user to state
+    const user = await loginService.login({ username, password })
+    setUser(user)
+    setUsername('')
+    setPassword('')
   }
 
-  //TODO: if user === null => display login form, otherwise display blogs form
+  if (user === null) {
+    return (
+      <div>
+        <Login
+          handleLogin={handleLogin}
+          username={username}
+          password={password}
+          handleUsernameChange={handleUsernameChange}
+          handlePasswordChange={handlePasswordChange}
+        />
+      </div>
+    )
+  }
   return (
     <div>
-      <Login
-        handleLogin={handleLogin}
-        username={username}
-        password={password}
-        handleUsernameChange={handleUsernameChange}
-        handlePasswordChange={handlePasswordChange}
-      />
       <h2>blogs</h2>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
