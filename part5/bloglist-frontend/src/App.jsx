@@ -4,12 +4,15 @@ import Login from './components/Login'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import BlogForm from './components/BlogForm'
+import Notification from './components/Notification'
+import NOTIFICATION_TYPE from './constants/NotificationType'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -43,13 +46,22 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      //TODO: notification msg
-      console.log('wrong credentials')
+      setNotificationHelper('wrong username or password', NOTIFICATION_TYPE.ERROR)
     }
   }
 
   const handleLogout = () => {
     loginService.clearLoggedUser()
+  }
+
+  const setNotificationHelper = (message, type, timeout) => {
+    setNotification({
+      type,
+      message
+    })
+    setTimeout(() => {
+      setNotification(null)
+    }, timeout ? timeout : 5000)
   }
 
   const handleBlogCreation = async (event) => {
@@ -61,16 +73,17 @@ const App = () => {
       title, author, url
     }
     const response = await blogService.createBlog(blog)
-    console.log('response', response)
-    console.log(title, author, url);
     event.target.title.value = ''
     event.target.author.value = ''
     event.target.url.value = ''
+    setNotificationHelper(`a new blog ${response.title} by ${response.author} added`, NOTIFICATION_TYPE.SUCCESS)
   }
 
   if (user === null) {
     return (
       <div>
+        <h2>log in to application</h2>
+        <Notification notification={notification} />
         <Login
           handleLogin={handleLogin}
           username={username}
@@ -84,6 +97,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      <Notification notification={notification} />
       <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
       <BlogForm handleBlogCreation={handleBlogCreation} />
       {blogs.map(blog =>
