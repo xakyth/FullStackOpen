@@ -66,9 +66,10 @@ const App = () => {
   }
 
   const addBlog = async (blogObject) => {
-    const response = await blogService.createBlog(blogObject)
-    setNotificationHelper(`a new blog ${response.title} by ${response.author} added`, NOTIFICATION_TYPE.SUCCESS)
+    const blog = await blogService.createBlog(blogObject)
+    setNotificationHelper(`a new blog ${blog.title} by ${blog.author} added`, NOTIFICATION_TYPE.SUCCESS)
     refBlogForm.current.toggleVisibility()
+    setBlogs(blogs.concat(blog))
   }
 
   const refBlogForm = useRef()
