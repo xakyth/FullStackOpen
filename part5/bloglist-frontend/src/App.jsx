@@ -65,18 +65,8 @@ const App = () => {
     }, timeout ? timeout : 5000)
   }
 
-  const handleBlogCreation = async (event) => {
-    event.preventDefault()
-    const title = event.target.title.value
-    const author = event.target.author.value
-    const url = event.target.url.value
-    const blog = {
-      title, author, url
-    }
-    const response = await blogService.createBlog(blog)
-    event.target.title.value = ''
-    event.target.author.value = ''
-    event.target.url.value = ''
+  const addBlog = async (blogObject) => {
+    const response = await blogService.createBlog(blogObject)
     setNotificationHelper(`a new blog ${response.title} by ${response.author} added`, NOTIFICATION_TYPE.SUCCESS)
     refBlogForm.current.toggleVisibility()
   }
@@ -104,7 +94,7 @@ const App = () => {
       <Notification notification={notification} />
       <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
       <Togglable buttonLabel="new note" ref={refBlogForm}>
-        <BlogForm handleBlogCreation={handleBlogCreation} />
+        <BlogForm createBlog={addBlog} />
       </Togglable>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
