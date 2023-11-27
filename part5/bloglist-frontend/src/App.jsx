@@ -23,7 +23,7 @@ const App = () => {
           return -1
         else if (b1.likes < b2.likes)
           return 1
-        else 
+        else
           return 0
       }
       ))
