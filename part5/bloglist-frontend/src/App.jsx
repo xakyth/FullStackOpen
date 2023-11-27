@@ -18,15 +18,7 @@ const App = () => {
   useEffect(() => {
     const getAll = async () => {
       const blogs = await blogService.getAll()
-      setBlogs(blogs.sort((b1, b2) => {
-        if (b1.likes > b2.likes)
-          return -1
-        else if (b1.likes < b2.likes)
-          return 1
-        else
-          return 0
-      }
-      ))
+      sortAndSetBlogs(blogs)
     }
     getAll()
   }, [])
@@ -75,11 +67,28 @@ const App = () => {
     }, timeout ? timeout : 5000)
   }
 
+  const sortAndSetBlogs = (blogs) => {
+    setBlogs(blogs.sort((b1, b2) => {
+      if (b1.likes > b2.likes)
+        return -1
+      else if (b1.likes < b2.likes)
+        return 1
+      else
+        return 0
+    }
+    ))
+  }
+
+  const addLike = async (blog) => {
+    await blogService.updateBlog(blog)
+    sortAndSetBlogs(blogs.map((b) => b.id === blog.id ? blog : b))
+  }
+
   const addBlog = async (blogObject) => {
     const blog = await blogService.createBlog(blogObject)
     setNotificationHelper(`a new blog ${blog.title} by ${blog.author} added`, NOTIFICATION_TYPE.SUCCESS)
     refBlogForm.current.toggleVisibility()
-    setBlogs(blogs.concat(blog))
+    sortAndSetBlogs(blogs.concat(blog))
   }
 
   const refBlogForm = useRef()
@@ -108,7 +117,7 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} blogs={blogs} setBlogs={setBlogs} />
+        <Blog key={blog.id} blog={blog} handleLike={addLike} />
       )}
     </div>
   )
