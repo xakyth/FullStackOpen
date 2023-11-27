@@ -1,4 +1,5 @@
 import { useState } from "react"
+import blogService from '../services/blogs'
 
 const Blog = ({ blog }) => {
   const [expanded, setExpanded] = useState(false)
@@ -16,6 +17,10 @@ const Blog = ({ blog }) => {
 
   const toggleExpanded = () => setExpanded(!expanded)
 
+  const handleLike = (event) => {
+    blogService.updateBlog({...blog, likes: blog.likes + 1})
+  }
+
   return (
     <div style={blogStyle}>
       <div style={hideWhenExpanded}>
@@ -24,7 +29,7 @@ const Blog = ({ blog }) => {
       <div style={showWhenExpanded}>
         <div>{blog.title} <button onClick={toggleExpanded}>hide</button></div>
         <div>{blog.url}</div>
-        <div>likes {blog.likes} <button>like</button></div>
+        <div>likes {blog.likes} <button onClick={handleLike}>like</button></div>
         <div>{blog.author}</div>
       </div>
     </div>
