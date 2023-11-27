@@ -16,9 +16,19 @@ const App = () => {
   const [notification, setNotification] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
+    const getAll = async () => {
+      const blogs = await blogService.getAll()
+      setBlogs(blogs.sort((b1, b2) => {
+        if (b1.likes > b2.likes)
+          return -1
+        else if (b1.likes < b2.likes)
+          return 1
+        else 
+          return 0
+      }
+      ))
+    }
+    getAll()
   }, [])
 
   useEffect(() => {
