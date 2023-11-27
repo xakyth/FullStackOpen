@@ -55,6 +55,7 @@ const App = () => {
 
   const handleLogout = () => {
     loginService.clearLoggedUser()
+    setUser(null)
   }
 
   const setNotificationHelper = (message, type, timeout) => {
