@@ -1,7 +1,7 @@
 import { useState } from "react"
 import blogService from '../services/blogs'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, blogs, setBlogs }) => {
   const [expanded, setExpanded] = useState(false)
 
   const blogStyle = {
@@ -18,7 +18,9 @@ const Blog = ({ blog }) => {
   const toggleExpanded = () => setExpanded(!expanded)
 
   const handleLike = (event) => {
-    blogService.updateBlog({...blog, likes: blog.likes + 1})
+    const updBlog = { ...blog, likes: blog.likes + 1 }
+    blogService.updateBlog(updBlog)
+    setBlogs(blogs.map((b) => b.id === blog.id ? updBlog : b))
   }
 
   return (
