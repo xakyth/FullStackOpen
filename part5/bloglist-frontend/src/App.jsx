@@ -24,7 +24,7 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    const storedLogIn = loginService.getLoggedUser();
+    const storedLogIn = loginService.getLoggedUser()
     if (storedLogIn) {
       setUser(storedLogIn)
       blogService.setToken(storedLogIn.token)

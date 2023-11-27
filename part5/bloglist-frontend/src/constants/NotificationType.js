@@ -4,4 +4,4 @@ const NOTIFICATION_TYPE = {
   SUCCESS: 'success'
 }
 
-export default NOTIFICATION_TYPE 
+export default NOTIFICATION_TYPE

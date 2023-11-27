@@ -1,7 +1,7 @@
-import NOTIFICATION_TYPE from "../constants/NotificationType"
+import NOTIFICATION_TYPE from '../constants/NotificationType'
 
 const Notification = ({ notification }) => {
-  if (notification == null) {
+  if (notification === null) {
     return null
   }
   const { type, message } = notification
@@ -16,16 +16,14 @@ const Notification = ({ notification }) => {
     padding: '5px 10px',
   }
   switch (type) {
-    case NOTIFICATION_TYPE.ERROR:
-      inlineStyle.color = 'red'
-      break;
-    case NOTIFICATION_TYPE.INFO:
-      inlineStyle.color = 'blue'
-      break;
-    case NOTIFICATION_TYPE.SUCCESS:
-      inlineStyle.color = 'green'
-    default:
-      break;
+  case NOTIFICATION_TYPE.ERROR:
+    inlineStyle.color = 'red'
+    break
+  case NOTIFICATION_TYPE.INFO:
+    inlineStyle.color = 'blue'
+    break
+  case NOTIFICATION_TYPE.SUCCESS:
+    inlineStyle.color = 'green'
   }
   return (
     <div>
