@@ -34,16 +34,17 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response, next) 
     return response.status(404).json({ messge: 'no such user' });
   }
 
-  const blogObject = new Blog({
+  let blogObject = new Blog({
     ...request.body,
     user: userObj._id,
   });
-  await blogObject.save();
   userObj.blogs = userObj.blogs.concat(blogObject._id);
   await userObj.save();
 
-  const result = await blogObject.save();
-  response.status(201).json(result);
+  blogObject = await blogObject.save();
+  await blogObject.populate('user', ['username', 'name']);
+
+  response.status(201).json(blogObject);
 });
 
 blogsRouter.delete('/:id', middleware.userExtractor, async (request, response, next) => {
