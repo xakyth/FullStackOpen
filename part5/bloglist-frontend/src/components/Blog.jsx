@@ -38,11 +38,11 @@ const Blog = ({ blog, handleLike, handleRemove, user }) => {
   }
 
   return (
-    <div style={blogStyle}>
-      <div style={hideWhenExpanded}>
+    <div style={blogStyle} >
+      <div style={hideWhenExpanded} className="blogShort">
         <div>{blog.title} {blog.author}<button onClick={toggleExpanded}>view</button></div>
       </div>
-      <div style={showWhenExpanded}>
+      <div style={showWhenExpanded} className="blogFull">
         <div>{blog.title} {blog.author}<button onClick={toggleExpanded}>hide</button></div>
         <div>{blog.url}</div>
         <div>likes {blog.likes} <button onClick={handleLikeButton}>like</button></div>
