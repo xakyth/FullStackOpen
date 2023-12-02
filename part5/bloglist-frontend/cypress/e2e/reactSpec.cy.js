@@ -29,4 +29,17 @@ describe('Blog app', function() {
       cy.contains('wrong username or password').should('have.css', 'color', 'rgb(255, 0, 0)')
     })
   })
+  describe('when logged in', function() {
+    beforeEach(function() {
+      cy.login({ username: 'xakyth', password: 'p4$$w0rD'})
+    })
+    it('a blog can be created', function() {
+      cy.contains('new note').click()
+      cy.get('input[placeholder="Title"]').type('Title for new blog')
+      cy.get('input[placeholder="Author"]').type('Arthur Bobrov')
+      cy.get('input[placeholder="URL"]').type('https://random.org')
+      cy.get('button').contains('create').click()
+      cy.contains('Title for new blog Arthur Bobrov')
+    })
+  })
 })
