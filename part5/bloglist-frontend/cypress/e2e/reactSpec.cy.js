@@ -45,5 +45,34 @@ describe('Blog app', function () {
       cy.get('button').contains('create').click()
       cy.contains('Title for new blog Arthur Bobrov')
     })
+    describe.only('when blog already exist', function () {
+      beforeEach(function () {
+        cy.createBlog({
+          title: 'Automatically created blog',
+          author: 'Jon Doe',
+          url: 'https://stackoverflow.com/',
+          likes: Math.round(Math.random() * 100)
+        })
+      })
+      it('user can like a blog', async function () {
+        cy.contains('Automatically created blog').find('button').click()
+        cy.contains('div.blogFull', 'Automatically created blog')
+          .contains('button', 'like')
+          .parent()
+          .invoke('text')
+          .as('initialLikes')
+        let initialLikes
+        await cy.get('@initialLikes').then((text) => {
+          initialLikes = text
+        })
+        cy.contains('div.blogFull', 'Automatically created blog')
+          .contains('button', 'like')
+          .click()
+        cy.contains('div.blogFull', 'Automatically created blog')
+          .contains('button', 'like')
+          .parent()
+          .should('contain', `likes ${parseInt(initialLikes.split(' ')[1], 10) + 1}`)
+      })
+    })
   })
 })
