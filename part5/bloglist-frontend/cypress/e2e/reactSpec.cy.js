@@ -58,7 +58,7 @@ describe('Blog app', function () {
           title: 'Automatically created blog',
           author: 'Jon Doe',
           url: 'https://stackoverflow.com/',
-          likes: Math.round(Math.random() * 100)
+          likes: Math.round(Math.random() * 100),
         })
       })
       it('user can like a blog', async function () {
@@ -78,25 +78,69 @@ describe('Blog app', function () {
         cy.contains('div.blogFull', 'Automatically created blog')
           .contains('button', 'like')
           .parent()
-          .should('contain', `likes ${parseInt(initialLikes.split(' ')[1], 10) + 1}`)
+          .should(
+            'contain',
+            `likes ${parseInt(initialLikes.split(' ')[1], 10) + 1}`
+          )
       })
       it('blog creator can delete his blog', function () {
-        cy.contains('div.blogShort', 'Automatically created blog').find('button', 'view').click()
-        cy.contains('div.blogFull', 'Automatically created blog').contains('button', 'remove').click()
+        cy.contains('div.blogShort', 'Automatically created blog')
+          .find('button', 'view')
+          .click()
+        cy.contains('div.blogFull', 'Automatically created blog')
+          .contains('button', 'remove')
+          .click()
         cy.contains('Automatically created blog').should('not.exist')
       })
       it('only creator see remove button', function () {
         cy.contains('button', 'logout').click()
         const secondUser = {
-          username: "dummy",
-          password: "$htiRletz",
-          name: "Vladimir"
+          username: 'dummy',
+          password: '$htiRletz',
+          name: 'Vladimir',
         }
         cy.request('POST', 'http://localhost:3001/api/users', secondUser)
-        cy.login({ username: secondUser.username, password: secondUser.password })
-        cy.contains('div.blogShort', 'Automatically created blog').contains('button', 'view').click()
-        cy.contains('div.blogFull', 'Automatically created blog').contains('button', 'remove').should('not.exist')
+        cy.login({
+          username: secondUser.username,
+          password: secondUser.password,
+        })
+        cy.contains('div.blogShort', 'Automatically created blog')
+          .contains('button', 'view')
+          .click()
+        cy.contains('div.blogFull', 'Automatically created blog')
+          .contains('button', 'remove')
+          .should('not.exist')
       })
+    })
+    it('blogs sorted according to likes', function () {
+      cy.createBlog({
+        title: 'some title 1',
+        author: 'some author 1',
+        url: 'url1',
+        likes: 8,
+      })
+      cy.createBlog({
+        title: 'The title with the second most likes',
+        author: 'Anonymous',
+        url: 'url1',
+        likes: 88,
+      })
+      cy.createBlog({
+        title: 'some title 2',
+        author: 'some author 2',
+        url: 'url1',
+        likes: '7'
+      })
+      cy.createBlog({
+        title: 'The title with the most likes',
+        author: 'Unnamed',
+        url: 'url1',
+        likes: 99
+      })
+      cy.get('div.blog').eq(0).should('contain', 'The title with the most likes')
+      cy.get('div.blog').eq(1).should('contain', 'The title with the second most likes')
+      cy.get('div.blog').eq(2).should('contain', 'some title 1')
+      cy.get('div.blog').eq(3).should('contain', 'some title 2')
     })
   })
 })
