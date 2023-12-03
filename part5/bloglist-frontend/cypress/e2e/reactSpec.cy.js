@@ -35,6 +35,13 @@ describe('Blog app', function () {
   })
   describe('when logged in', function () {
     beforeEach(function () {
+      cy.request('POST', 'http://localhost:3001/api/testing/reset')
+      const user = {
+        username: 'xakyth',
+        name: 'Roman',
+        password: 'p4$$w0rD',
+      }
+      cy.request('POST', 'http://localhost:3001/api/users', user)
       cy.login({ username: 'xakyth', password: 'p4$$w0rD' })
     })
     it('a blog can be created', function () {
@@ -73,10 +80,22 @@ describe('Blog app', function () {
           .parent()
           .should('contain', `likes ${parseInt(initialLikes.split(' ')[1], 10) + 1}`)
       })
-      it.only('blog creator can delete his blog', function () {
+      it('blog creator can delete his blog', function () {
         cy.contains('div.blogShort', 'Automatically created blog').find('button', 'view').click()
         cy.contains('div.blogFull', 'Automatically created blog').contains('button', 'remove').click()
         cy.contains('Automatically created blog').should('not.exist')
+      })
+      it('only creator see remove button', function () {
+        cy.contains('button', 'logout').click()
+        const secondUser = {
+          username: "dummy",
+          password: "$htiRletz",
+          name: "Vladimir"
+        }
+        cy.request('POST', 'http://localhost:3001/api/users', secondUser)
+        cy.login({ username: secondUser.username, password: secondUser.password })
+        cy.contains('div.blogShort', 'Automatically created blog').contains('button', 'view').click()
+        cy.contains('div.blogFull', 'Automatically created blog').contains('button', 'remove').should('not.exist')
       })
     })
   })
