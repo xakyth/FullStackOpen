@@ -45,7 +45,7 @@ describe('Blog app', function () {
       cy.get('button').contains('create').click()
       cy.contains('Title for new blog Arthur Bobrov')
     })
-    describe.only('when blog already exist', function () {
+    describe('when blog already exist', function () {
       beforeEach(function () {
         cy.createBlog({
           title: 'Automatically created blog',
@@ -72,6 +72,11 @@ describe('Blog app', function () {
           .contains('button', 'like')
           .parent()
           .should('contain', `likes ${parseInt(initialLikes.split(' ')[1], 10) + 1}`)
+      })
+      it.only('blog creator can delete his blog', function () {
+        cy.contains('div.blogShort', 'Automatically created blog').find('button', 'view').click()
+        cy.contains('div.blogFull', 'Automatically created blog').contains('button', 'remove').click()
+        cy.contains('Automatically created blog').should('not.exist')
       })
     })
   })
