@@ -8,13 +8,13 @@ const AnecdoteList = () => {
   const queryClient = useQueryClient()
   const updateAnecdoteMutation = useMutation({
     mutationFn: update,
-    onSuccess: () => {
+    onSuccess: ({ content }) => {
       queryClient.invalidateQueries({ queryKey: ['anecdotes'] })
+      setNotification(`anecdote '${content}' voted`)
     }
   })
   const handleVote = (anecdote) => {
     updateAnecdoteMutation.mutate({ ...anecdote, votes: anecdote.votes + 1 })
-    setNotification(`anecdote '${anecdote.content}' voted`)
   }
 
   const { isLoading, error, data } = useQuery({
