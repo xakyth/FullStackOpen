@@ -9,6 +9,13 @@ const AnecdoteForm = () => {
     mutationFn: createNew,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['anecdotes'] })
+    },    
+    onError: (error) => {
+      const errorMessage = error.response.data.error
+      notificationDispatch({ type: 'SET', payload: errorMessage})
+      setTimeout(() => {
+        notificationDispatch({ type: 'REMOVE' })
+      }, 5000)
     }
   })
 
