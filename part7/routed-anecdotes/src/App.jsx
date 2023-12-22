@@ -4,6 +4,7 @@ import Menu from '../components/Menu'
 import About from '../components/About'
 import Footer from '../components/Footer'
 import CreateNew from '../components/CreateNew'
+import { Route, Routes } from 'react-router-dom'
 
 const App = () => {
   const [anecdotes, setAnecdotes] = useState([
@@ -48,9 +49,11 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
-      <AnecdoteList anecdotes={anecdotes} />
-      <About />
-      <CreateNew addNew={addNew} />
+      <Routes>
+        <Route path='/' element={<AnecdoteList anecdotes={anecdotes} />}></Route>
+        <Route path='/create' element={<CreateNew addNew={addNew} />}></Route>
+        <Route path='/about' element={<About />}></Route>
+      </Routes>
       <Footer />
     </div>
   )
