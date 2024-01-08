@@ -15,44 +15,23 @@ import {
   updateBlog,
   deleteBlog,
 } from './reducers/blogsReducer'
+import { initUserFromStorage, logout } from './reducers/loginReducer'
 
 const App = () => {
-  const [user, setUser] = useState(null)
-
   const dispatch = useDispatch()
   const blogs = useSelector((state) => state.blogs)
+  const user = useSelector((state) => state.user)
 
   useEffect(() => {
     dispatch(initBlogs())
   }, [])
 
   useEffect(() => {
-    const storedLogIn = loginService.getLoggedUser()
-    if (storedLogIn) {
-      setUser(storedLogIn)
-      blogService.setToken(storedLogIn.token)
-    }
+    dispatch(initUserFromStorage())
   }, [])
 
-  const handleLogin = async ({ username, password }) => {
-    try {
-      const user = await loginService.login({ username, password })
-      setUser(user)
-      loginService.setLoggedUser(user)
-      blogService.setToken(user.token)
-    } catch (exception) {
-      dispatch(
-        setNotification({
-          message: 'wrong username or password',
-          type: NOTIFICATION_TYPE.ERROR,
-        })
-      )
-    }
-  }
-
   const handleLogout = () => {
-    loginService.clearLoggedUser()
-    setUser(null)
+    dispatch(logout())
   }
 
   const addLike = async (blog) => {
@@ -83,7 +62,7 @@ const App = () => {
       <div>
         <h2>log in to application</h2>
         <Notification />
-        <Login handleLogin={handleLogin} />
+        <Login />
       </div>
     )
   }

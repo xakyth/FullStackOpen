@@ -1,8 +1,12 @@
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { login } from '../reducers/loginReducer'
 
-const Login = ({ handleLogin }) => {
+const Login = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+
+  const dispatch = useDispatch()
 
   const handleUsernameChange = ({ target }) => {
     setUsername(target.value)
@@ -14,7 +18,7 @@ const Login = ({ handleLogin }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    handleLogin({ username, password })
+    dispatch(login({ username, password }))
   }
 
   return (
