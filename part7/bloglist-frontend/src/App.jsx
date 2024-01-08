@@ -7,23 +7,25 @@ import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import NOTIFICATION_TYPE from './constants/NotificationType'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
+import {
+  initBlogs,
+  createBlog,
+  updateBlog,
+  deleteBlog,
+} from './reducers/blogsReducer'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   const dispatch = useDispatch()
+  const blogs = useSelector((state) => state.blogs)
 
   useEffect(() => {
-    const getAll = async () => {
-      const blogs = await blogService.getAll()
-      sortAndSetBlogs(blogs)
-    }
-    getAll()
+    dispatch(initBlogs())
   }, [])
 
   useEffect(() => {
@@ -66,36 +68,25 @@ const App = () => {
     setUser(null)
   }
 
-  const sortAndSetBlogs = (blogs) => {
-    setBlogs(
-      blogs.sort((b1, b2) => {
-        if (b1.likes > b2.likes) return -1
-        else if (b1.likes < b2.likes) return 1
-        else return 0
-      })
-    )
-  }
-
   const addLike = async (blog) => {
-    await blogService.updateBlog(blog)
-    sortAndSetBlogs(blogs.map((b) => (b.id === blog.id ? blog : b)))
+    dispatch(updateBlog(blog))
   }
 
   const addBlog = async (blogObject) => {
-    const blog = await blogService.createBlog(blogObject)
-    dispatch(
-      setNotification({
-        message: `a new blog ${blog.title} by ${blog.author} added`,
-        type: NOTIFICATION_TYPE.SUCCESS,
-      })
-    )
+    dispatch(createBlog(blogObject)).then((blog) => {
+      if (blog)
+        dispatch(
+          setNotification({
+            message: `a new blog ${blog.title} by ${blog.author} added`,
+            type: NOTIFICATION_TYPE.SUCCESS,
+          })
+        )
+    })
     refBlogForm.current.toggleVisibility()
-    sortAndSetBlogs(blogs.concat(blog))
   }
 
   const removeBlog = async (blog) => {
-    await blogService.removeBlog(blog)
-    setBlogs(blogs.filter((b) => b.id !== blog.id))
+    dispatch(deleteBlog(blog))
   }
 
   const refBlogForm = useRef()
