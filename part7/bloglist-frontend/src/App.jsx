@@ -17,8 +17,6 @@ import {
 } from './reducers/blogsReducer'
 
 const App = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   const dispatch = useDispatch()
@@ -36,23 +34,12 @@ const App = () => {
     }
   }, [])
 
-  const handleUsernameChange = ({ target }) => {
-    setUsername(target.value)
-  }
-
-  const handlePasswordChange = ({ target }) => {
-    setPassword(target.value)
-  }
-
-  const handleLogin = async (event) => {
-    event.preventDefault()
+  const handleLogin = async ({ username, password }) => {
     try {
       const user = await loginService.login({ username, password })
       setUser(user)
       loginService.setLoggedUser(user)
       blogService.setToken(user.token)
-      setUsername('')
-      setPassword('')
     } catch (exception) {
       dispatch(
         setNotification({
@@ -96,13 +83,7 @@ const App = () => {
       <div>
         <h2>log in to application</h2>
         <Notification />
-        <Login
-          handleLogin={handleLogin}
-          username={username}
-          password={password}
-          handleUsernameChange={handleUsernameChange}
-          handlePasswordChange={handlePasswordChange}
-        />
+        <Login handleLogin={handleLogin} />
       </div>
     )
   }
