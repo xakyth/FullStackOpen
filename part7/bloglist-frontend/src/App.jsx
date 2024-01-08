@@ -7,13 +7,16 @@ import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import NOTIFICATION_TYPE from './constants/NotificationType'
+import { useDispatch } from 'react-redux'
+import { setNotification } from './reducers/notificationReducer'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState(null)
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const getAll = async () => {
@@ -49,9 +52,11 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setNotificationHelper(
-        'wrong username or password',
-        NOTIFICATION_TYPE.ERROR
+      dispatch(
+        setNotification({
+          message: 'wrong username or password',
+          type: NOTIFICATION_TYPE.ERROR,
+        })
       )
     }
   }
@@ -59,19 +64,6 @@ const App = () => {
   const handleLogout = () => {
     loginService.clearLoggedUser()
     setUser(null)
-  }
-
-  const setNotificationHelper = (message, type, timeout) => {
-    setNotification({
-      type,
-      message,
-    })
-    setTimeout(
-      () => {
-        setNotification(null)
-      },
-      timeout ? timeout : 5000
-    )
   }
 
   const sortAndSetBlogs = (blogs) => {
@@ -91,9 +83,11 @@ const App = () => {
 
   const addBlog = async (blogObject) => {
     const blog = await blogService.createBlog(blogObject)
-    setNotificationHelper(
-      `a new blog ${blog.title} by ${blog.author} added`,
-      NOTIFICATION_TYPE.SUCCESS
+    dispatch(
+      setNotification({
+        message: `a new blog ${blog.title} by ${blog.author} added`,
+        type: NOTIFICATION_TYPE.SUCCESS,
+      })
     )
     refBlogForm.current.toggleVisibility()
     sortAndSetBlogs(blogs.concat(blog))
@@ -110,7 +104,7 @@ const App = () => {
     return (
       <div>
         <h2>log in to application</h2>
-        <Notification notification={notification} />
+        <Notification />
         <Login
           handleLogin={handleLogin}
           username={username}
@@ -124,7 +118,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification notification={notification} />
+      <Notification />
       <p>
         {user.name} logged in <button onClick={handleLogout}>logout</button>
       </p>

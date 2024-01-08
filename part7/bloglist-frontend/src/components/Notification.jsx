@@ -1,6 +1,8 @@
+import { useSelector } from 'react-redux'
 import NOTIFICATION_TYPE from '../constants/NotificationType'
 
-const Notification = ({ notification }) => {
+const Notification = () => {
+  const notification = useSelector((state) => state.notification)
   if (notification === null) {
     return null
   }
@@ -16,14 +18,17 @@ const Notification = ({ notification }) => {
     padding: '5px 10px',
   }
   switch (type) {
-  case NOTIFICATION_TYPE.ERROR:
-    inlineStyle.color = 'red'
-    break
-  case NOTIFICATION_TYPE.INFO:
-    inlineStyle.color = 'blue'
-    break
-  case NOTIFICATION_TYPE.SUCCESS:
-    inlineStyle.color = 'green'
+    case NOTIFICATION_TYPE.ERROR:
+      inlineStyle.color = 'red'
+      break
+    case NOTIFICATION_TYPE.INFO:
+      inlineStyle.color = 'blue'
+      break
+    case NOTIFICATION_TYPE.SUCCESS:
+      inlineStyle.color = 'green'
+      break
+    default:
+      inlineStyle.color = 'blue'
   }
   return (
     <div>
