@@ -49,7 +49,10 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setNotificationHelper('wrong username or password', NOTIFICATION_TYPE.ERROR)
+      setNotificationHelper(
+        'wrong username or password',
+        NOTIFICATION_TYPE.ERROR
+      )
     }
   }
 
@@ -61,33 +64,37 @@ const App = () => {
   const setNotificationHelper = (message, type, timeout) => {
     setNotification({
       type,
-      message
+      message,
     })
-    setTimeout(() => {
-      setNotification(null)
-    }, timeout ? timeout : 5000)
+    setTimeout(
+      () => {
+        setNotification(null)
+      },
+      timeout ? timeout : 5000
+    )
   }
 
   const sortAndSetBlogs = (blogs) => {
-    setBlogs(blogs.sort((b1, b2) => {
-      if (b1.likes > b2.likes)
-        return -1
-      else if (b1.likes < b2.likes)
-        return 1
-      else
-        return 0
-    }
-    ))
+    setBlogs(
+      blogs.sort((b1, b2) => {
+        if (b1.likes > b2.likes) return -1
+        else if (b1.likes < b2.likes) return 1
+        else return 0
+      })
+    )
   }
 
   const addLike = async (blog) => {
     await blogService.updateBlog(blog)
-    sortAndSetBlogs(blogs.map((b) => b.id === blog.id ? blog : b))
+    sortAndSetBlogs(blogs.map((b) => (b.id === blog.id ? blog : b)))
   }
 
   const addBlog = async (blogObject) => {
     const blog = await blogService.createBlog(blogObject)
-    setNotificationHelper(`a new blog ${blog.title} by ${blog.author} added`, NOTIFICATION_TYPE.SUCCESS)
+    setNotificationHelper(
+      `a new blog ${blog.title} by ${blog.author} added`,
+      NOTIFICATION_TYPE.SUCCESS
+    )
     refBlogForm.current.toggleVisibility()
     sortAndSetBlogs(blogs.concat(blog))
   }
@@ -118,13 +125,21 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <Notification notification={notification} />
-      <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
-      <Togglable buttonLabel="new note" ref={refBlogForm}>
+      <p>
+        {user.name} logged in <button onClick={handleLogout}>logout</button>
+      </p>
+      <Togglable buttonLabel='new note' ref={refBlogForm}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} handleLike={addLike} user={user} handleRemove={removeBlog} />
-      )}
+      {blogs.map((blog) => (
+        <Blog
+          key={blog.id}
+          blog={blog}
+          handleLike={addLike}
+          user={user}
+          handleRemove={removeBlog}
+        />
+      ))}
     </div>
   )
 }
