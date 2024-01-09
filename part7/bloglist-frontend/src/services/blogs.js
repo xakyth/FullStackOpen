@@ -11,9 +11,14 @@ const setToken = (newToken) => {
   }
 }
 
-const getAll = () => {
-  const request = axios.get(baseUrl, headers)
-  return request.then((response) => response.data)
+const getAll = async () => {
+  const response = await axios.get(baseUrl, headers)
+  return response.data
+}
+
+const getById = async (id) => {
+  const response = await axios.get(`${baseUrl}/${id}`, headers)
+  return response.data
 }
 
 const createBlog = async (blog) => {
@@ -34,4 +39,4 @@ const removeBlog = async (blog) => {
   await axios.delete(`${baseUrl}/${blog.id}`, headers)
 }
 
-export default { getAll, createBlog, setToken, updateBlog, removeBlog }
+export default { getAll, getById, createBlog, setToken, updateBlog, removeBlog }
