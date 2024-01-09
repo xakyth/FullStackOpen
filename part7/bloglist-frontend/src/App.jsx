@@ -8,19 +8,15 @@ import Users from './components/Users'
 import User from './components/User'
 import BlogList from './components/BlogList'
 import Blog from './components/Blog'
+import NavigationMenu from './components/NavigationMenu'
 
 const App = () => {
-  const dispatch = useDispatch()
-
   const user = useSelector((state) => state.user)
+  const dispatch = useDispatch()
 
   useEffect(() => {
     dispatch(initUserFromStorage())
   }, [])
-
-  const handleLogout = () => {
-    dispatch(logout())
-  }
 
   if (user === null) {
     return (
@@ -31,14 +27,12 @@ const App = () => {
       </div>
     )
   }
+
   return (
     <div>
-      <h2>blogs</h2>
       <Notification />
-      <p>
-        {user.name} logged in
-        <button onClick={handleLogout}>logout</button>
-      </p>
+      <NavigationMenu />
+      <h1>blog app</h1>
       <Routes>
         <Route element={<User />} path='/users/:id' />
         <Route element={<Users />} path='/users' />
