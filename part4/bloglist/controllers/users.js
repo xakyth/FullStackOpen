@@ -8,6 +8,20 @@ userRouter.get('/', async (request, response) => {
   response.json(users);
 });
 
+userRouter.get('/:id', async (request, response, next) => {
+  const { id } = request.params
+  try {
+    const user = await User.findById(id).populate('blogs', [
+      'url',
+      'title',
+      'author',
+    ])
+    response.status(200).json(user)
+  } catch (exception) {
+    next()
+  }
+})
+
 userRouter.post('/', async (request, response, next) => {
   const { username, name, password } = request.body;
   if (password.length < 3) {
