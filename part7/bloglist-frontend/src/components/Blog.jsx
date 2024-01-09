@@ -49,6 +49,12 @@ const Blog = () => {
       </div>
       <div>added by {blog.user.name}</div>
       {removeBlogButton()}
+      <h2>comments</h2>
+      <ul>
+        {blog.comments.map((comment, index) => {
+          return <li key={index}>{comment}</li>
+        })}
+      </ul>
     </div>
   )
 }
