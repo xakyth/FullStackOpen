@@ -47,6 +47,23 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response, next) 
   response.status(201).json(blogObject);
 });
 
+blogsRouter.post(
+  '/:id/comments',
+  middleware.userExtractor,
+  async (request, response, next) => {
+    const { id } = request.params
+    const { comment } = request.body
+    try {
+      let blog = await Blog.findById(id)
+      blog.comments = blog.comments.concat(comment)
+      const result = await blog.save()
+      response.status(200).json(result)
+    } catch (exception) {
+      return next(exception)
+    }
+  }
+)
+
 blogsRouter.delete('/:id', middleware.userExtractor, async (request, response, next) => {
   const { id } = request.params;
   const user = request.user;
