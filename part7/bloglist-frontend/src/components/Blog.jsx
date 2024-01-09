@@ -49,7 +49,26 @@ const Blog = () => {
       </div>
       <div>added by {blog.user.name}</div>
       {removeBlogButton()}
+      <Comments blog={blog} setBlog={setBlog} />
+    </div>
+  )
+}
+
+const Comments = ({ blog, setBlog }) => {
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    const comment = event.target.comment.value
+    event.target.comment.value = ''
+    await blogService.addComment(blog.id, comment)
+    setBlog({ ...blog, comments: blog.comments.concat(comment) })
+  }
+  return (
+    <div>
       <h2>comments</h2>
+      <form onSubmit={handleSubmit}>
+        <input name='comment' placeholder='your commentary here...'></input>
+        <button type='submit'>add comment</button>
+      </form>
       <ul>
         {blog.comments.map((comment, index) => {
           return <li key={index}>{comment}</li>
