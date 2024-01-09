@@ -7,6 +7,7 @@ import { Route, Routes } from 'react-router-dom'
 import Users from './components/Users'
 import User from './components/User'
 import BlogList from './components/BlogList'
+import Blog from './components/Blog'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -42,6 +43,7 @@ const App = () => {
         <Route element={<User />} path='/users/:id' />
         <Route element={<Users />} path='/users' />
         <Route element={<BlogList />} path='/' />
+        <Route element={<Blog />} path='/blogs/:id' />
       </Routes>
     </div>
   )

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { createBlog } from '../reducers/blogsReducer'
 import { setNotification } from '../reducers/notificationReducer'
-import NOTIFICATION_TYPE from '../constants/NotificationType'
 
 const BlogForm = () => {
   const [title, setTitle] = useState('')

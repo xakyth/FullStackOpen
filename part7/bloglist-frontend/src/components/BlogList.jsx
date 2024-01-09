@@ -1,22 +1,16 @@
 import { useDispatch, useSelector } from 'react-redux'
-import Blog from './Blog'
 import BlogForm from './BlogForm'
 import Togglable from './Togglable'
 import { useEffect, useRef } from 'react'
 import { initBlogs } from '../reducers/blogsReducer'
+import { Link } from 'react-router-dom'
 
 const BlogList = () => {
-  const user = useSelector((state) => state.user)
-
   const dispatch = useDispatch()
 
   useEffect(() => {
     dispatch(initBlogs())
   }, [])
-
-  const addLike = async (blog) => {
-    dispatch(updateBlog(blog))
-  }
 
   const addBlog = async (blogObject) => {
     dispatch(createBlog(blogObject)).then((blog) => {
@@ -31,8 +25,12 @@ const BlogList = () => {
     refBlogForm.current.toggleVisibility()
   }
 
-  const removeBlog = async (blog) => {
-    dispatch(deleteBlog(blog))
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 5,
   }
 
   const refBlogForm = useRef()
@@ -44,13 +42,11 @@ const BlogList = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
       {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleLike={addLike}
-          user={user}
-          handleRemove={removeBlog}
-        />
+        <div key={blog.id} style={blogStyle}>
+          <Link to={`/blogs/${blog.id}`}>
+            {blog.title} {blog.author}
+          </Link>
+        </div>
       ))}
     </div>
   )
