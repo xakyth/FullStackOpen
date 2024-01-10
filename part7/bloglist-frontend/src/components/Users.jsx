@@ -1,6 +1,16 @@
 import { useEffect, useState } from 'react'
 import userService from '../services/users'
 import { Link } from 'react-router-dom'
+import {
+  Table,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableBody,
+  Paper,
+} from '@mui/material'
+import styled from '@emotion/styled'
 
 const Users = () => {
   const [users, setUsers] = useState([])
@@ -8,29 +18,38 @@ const Users = () => {
     userService.getAll().then((res) => setUsers(res))
   }, [])
 
+  const BorderedTD = styled(TableCell)`
+    &.MuiTableCell-root {
+      border: 1px solid #000;
+      font-weight: bold;
+    }
+  `
+
   return (
     <div>
       <h1>Users</h1>
-      <table>
-        <thead>
-          <tr>
-            <th />
-            <th>blogs created</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => {
-            return (
-              <tr key={user.id}>
-                <td>
-                  <Link to={`/users/${user.id}`}>{user.name}</Link>
-                </td>
-                <td>{user.blogs.length}</td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <BorderedTD />
+              <BorderedTD>blogs created</BorderedTD>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {users.map((user) => {
+              return (
+                <TableRow key={user.id}>
+                  <BorderedTD>
+                    <Link to={`/users/${user.id}`}>{user.name}</Link>
+                  </BorderedTD>
+                  <BorderedTD>{user.blogs.length}</BorderedTD>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   )
 }

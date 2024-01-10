@@ -9,6 +9,7 @@ import User from './components/User'
 import BlogList from './components/BlogList'
 import Blog from './components/Blog'
 import NavigationMenu from './components/NavigationMenu'
+import { Container } from '@mui/material'
 
 const App = () => {
   const user = useSelector((state) => state.user)
@@ -29,17 +30,19 @@ const App = () => {
   }
 
   return (
-    <div>
-      <Notification />
-      <NavigationMenu />
-      <h1>blog app</h1>
-      <Routes>
-        <Route element={<User />} path='/users/:id' />
-        <Route element={<Users />} path='/users' />
-        <Route element={<BlogList />} path='/' />
-        <Route element={<Blog />} path='/blogs/:id' />
-      </Routes>
-    </div>
+    <Container>
+      <div>
+        <Notification />
+        <NavigationMenu />
+        <h1>blog app</h1>
+        <Routes>
+          <Route element={<User />} path='/users/:id' />
+          <Route element={<Users />} path='/users' />
+          <Route element={<BlogList />} path='/' />
+          <Route element={<Blog />} path='/blogs/:id' />
+        </Routes>
+      </div>
+    </Container>
   )
 }
 
