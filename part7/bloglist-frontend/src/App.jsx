@@ -22,8 +22,8 @@ const App = () => {
   if (user === null) {
     return (
       <div>
-        <h2>log in to application</h2>
         <Notification />
+        <h2>log in to application</h2>
         <Login />
       </div>
     )
