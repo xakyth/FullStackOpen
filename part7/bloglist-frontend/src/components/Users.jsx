@@ -10,7 +10,7 @@ import {
   TableBody,
   Paper,
 } from '@mui/material'
-import styled from '@emotion/styled'
+import { BorderedTD, StyledTH } from '../styles/Table'
 
 const Users = () => {
   const [users, setUsers] = useState([])
@@ -18,24 +18,17 @@ const Users = () => {
     userService.getAll().then((res) => setUsers(res))
   }, [])
 
-  const BorderedTD = styled(TableCell)`
-    &.MuiTableCell-root {
-      border: 1px solid #000;
-      font-weight: bold;
-    }
-  `
-
   return (
     <div>
       <h1>Users</h1>
       <TableContainer component={Paper}>
         <Table>
-          <TableHead>
+          <StyledTH>
             <TableRow>
               <BorderedTD />
               <BorderedTD>blogs created</BorderedTD>
             </TableRow>
-          </TableHead>
+          </StyledTH>
           <TableBody>
             {users.map((user) => {
               return (
