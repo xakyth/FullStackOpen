@@ -98,6 +98,12 @@ let books = [
 */
 
 const typeDefs = `
+  type Author {
+    name: String!
+    bookCount: Int!
+    born: Int
+  }
+
   type Book {
     title: String!
     author: String!
@@ -109,14 +115,23 @@ const typeDefs = `
     bookCount: Int!
     authorCount: Int!
     allBooks: [Book!]!
+    allAuthors: [Author!]!
   }
 `
 
 const resolvers = {
+  Author: {
+    bookCount: (root) => {
+      return books.reduce((acc, book) => {
+        return book.author === root.name ? acc + 1 : acc
+      }, 0)
+    },
+  },
   Query: {
     bookCount: () => books.length,
     authorCount: () => authors.length,
     allBooks: () => books,
+    allAuthors: () => authors,
   },
 }
 
