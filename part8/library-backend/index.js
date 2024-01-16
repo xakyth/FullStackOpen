@@ -121,6 +121,7 @@ const typeDefs = `
 
   type Mutation {
     addBook(title: String!, author: String!, published: Int!, genres: [String!]!) : Book
+    editAuthor(author: String!, setBornTo: Int!) : Author
   }
 `
 
@@ -152,7 +153,6 @@ const resolvers = {
   Mutation: {
     addBook: (root, args) => {
       const author = authors.find((a) => a.name === args.author)
-      console.log('author', author)
       if (!author) authors.push({ name: args.author, id: uuid() })
       const addedBook = {
         title: args.title,
@@ -163,6 +163,13 @@ const resolvers = {
       }
       books.push(addedBook)
       return addedBook
+    },
+    editAuthor: (root, args) => {
+      let author = authors.find((a) => a.name === args.author)
+      if (!author) return null
+      author = { ...author, born: args.setBornTo }
+      authors = authors.map((a) => (a.id === author.id ? author : a))
+      return author
     },
   },
 }
