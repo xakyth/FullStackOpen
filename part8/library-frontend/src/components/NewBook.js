@@ -1,4 +1,6 @@
+import { useMutation } from '@apollo/client'
 import { useState } from 'react'
+import { ADD_BOOK } from '../gqlQueries'
 
 const NewBook = () => {
   const [title, setTitle] = useState('')
@@ -7,10 +9,14 @@ const NewBook = () => {
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
+  const [createBook] = useMutation(ADD_BOOK)
+
   const submit = async (event) => {
     event.preventDefault()
 
-    console.log('add book...')
+    createBook({
+      variables: { title, author, published: Number(published), genres },
+    })
 
     setTitle('')
     setPublished('')
