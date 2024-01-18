@@ -19,7 +19,6 @@ mongoose
 
 let authors = []
 
-let books = []
 
 const typeDefs = `
   type Author {
@@ -49,16 +48,10 @@ const typeDefs = `
 `
 
 const resolvers = {
-  //TODO:
   Author: {
     bookCount: async (root) => {
-      console.log('here')
-      const books = await Book.find({ author: root.id })
-      console.log('books', books)
-      return 0
-      /*return books.reduce((acc, book) => {
-        return book.author === root.name ? acc + 1 : acc
-      }, 0) */
+      const books = await Book.find({ author: root._id })
+      return books.length
     },
   },
   Query: {
