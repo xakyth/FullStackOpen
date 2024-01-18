@@ -2,6 +2,9 @@ const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
 const { v1: uuid } = require('uuid')
 const mongoose = require('mongoose')
+require('dotenv').config()
+const Book = require('./models/book')
+const Author = require('./models/author')
 
 const MONGODB_URI = process.env.MONGODB_URI
 console.log('connecting to', MONGODB_URI)
@@ -46,44 +49,60 @@ const typeDefs = `
 `
 
 const resolvers = {
+  //TODO:
   Author: {
-    bookCount: (root) => {
-      return books.reduce((acc, book) => {
+    bookCount: async (root) => {
+      console.log('here')
+      const books = await Book.find({ author: root.id })
+      console.log('books', books)
+      return 0
+      /*return books.reduce((acc, book) => {
         return book.author === root.name ? acc + 1 : acc
-      }, 0)
+      }, 0) */
     },
   },
   Query: {
+    //TODO:
     bookCount: () => books.length,
+    //TODO:
     authorCount: () => authors.length,
-    allBooks: (root, args) => {
-      if (!args.author && !args.genre) return books
+    //TODO:
+    allBooks: async (root, args) => {
+      if (!args.author && !args.genre) return Book.find({})
       if (args.genre && args.author) {
-        return books
-          .filter((book) => book.genres.find((g) => g === args.genre))
-          .filter((book) => book.author === args.author)
+        //TODO: args author as ObjectId? genres contains some String?
+        return Book.find({})
       } else if (args.genre) {
+        //TODO: prev
         return books.filter((book) => book.genres.find((g) => g === args.genre))
       } else {
+        //TODO: prev
         return books.filter((book) => book.author === args.author)
       }
     },
-    allAuthors: () => authors,
+    //TODO:
+    allAuthors: async () => {
+      const authors = await Author.find({})
+      console.log('authors', authors)
+      return authors
+    },
   },
   Mutation: {
-    addBook: (root, args) => {
-      const author = authors.find((a) => a.name === args.author)
-      if (!author) authors.push({ name: args.author, id: uuid() })
-      const addedBook = {
+    addBook: async (root, args) => {
+      let author = await Author.findOne({ name: args.author })
+      if (!author) {
+        author = new Author({ name: args.author })
+        await author.save()
+      }
+      const newBook = new Book({
         title: args.title,
         published: args.published,
-        author: args.author,
-        id: uuid(),
         genres: args.genres,
-      }
-      books.push(addedBook)
-      return addedBook
+        author: author._id,
+      })
+      return newBook.save()
     },
+    //TODO:
     editAuthor: (root, args) => {
       let author = authors.find((a) => a.name === args.author)
       if (!author) return null
