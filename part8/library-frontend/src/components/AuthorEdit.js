@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/client'
 import { useState } from 'react'
 import { ALL_AUTHORS, EDIT_AUTHOR } from '../gqlQueries'
 
-const AuthorEdit = () => {
+const AuthorEdit = ({ authors }) => {
   const [name, setName] = useState('')
   const [year, setYear] = useState('')
 
@@ -29,11 +29,11 @@ const AuthorEdit = () => {
       <form onSubmit={onSubmit}>
         <div>
           name:{' '}
-          <input
-            type='text'
-            value={name}
-            onChange={({ target }) => setName(target.value)}
-          />
+          <select onChange={({ target }) => setName(target.value)}>
+            {authors.map((a) => (
+              <option key={a.id}>{a.name}</option>
+            ))}
+          </select>
         </div>
         <div>
           year:{' '}

@@ -28,7 +28,7 @@ const Authors = () => {
           ))}
         </tbody>
       </table>
-      <AuthorEdit />
+      <AuthorEdit authors={authorsQuery.data.allAuthors} />
     </div>
   )
 }
