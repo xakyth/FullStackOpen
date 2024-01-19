@@ -19,7 +19,6 @@ mongoose
 
 let authors = []
 
-
 const typeDefs = `
   type Author {
     name: String!
@@ -55,23 +54,24 @@ const resolvers = {
     },
   },
   Query: {
-    //TODO:
-    bookCount: () => books.length,
-    //TODO:
-    authorCount: () => authors.length,
-    //TODO:
+    bookCount: async () => {
+      return Book.collection.countDocuments()
+    },
+    authorCount: async () => Author.collection.countDocuments(),
     allBooks: async (root, args) => {
-      if (!args.author && !args.genre) return Book.find({})
-      if (args.genre && args.author) {
-        //TODO: args author as ObjectId? genres contains some String?
-        return Book.find({})
+      let filter = {}
+      if (!args.author && !args.genre) {
+        filter = {}
+      } else if (args.genre && args.author) {
+        const author = await Author.findOne({ name: args.author })
+        filter = { genres: { $in: [args.genre] }, author: author._id }
       } else if (args.genre) {
-        //TODO: prev
-        return books.filter((book) => book.genres.find((g) => g === args.genre))
+        filter = { genres: { $in: [args.genre] } }
       } else {
-        //TODO: prev
-        return books.filter((book) => book.author === args.author)
+        const author = await Author.findOne({ name: args.author })
+        filter = { author: author._id }
       }
+      return Book.find(filter).populate('author')
     },
     //TODO:
     allAuthors: async () => {
