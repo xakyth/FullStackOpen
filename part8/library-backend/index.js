@@ -1,6 +1,5 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
-const { v1: uuid } = require('uuid')
 const mongoose = require('mongoose')
 require('dotenv').config()
 const Book = require('./models/book')
@@ -16,8 +15,6 @@ mongoose
   .catch((error) => {
     console.log('error connection to MongoDB:', error.message)
   })
-
-let authors = []
 
 const typeDefs = `
   type Author {
@@ -73,11 +70,8 @@ const resolvers = {
       }
       return Book.find(filter).populate('author')
     },
-    //TODO:
     allAuthors: async () => {
-      const authors = await Author.find({})
-      console.log('authors', authors)
-      return authors
+      return Author.find({})
     },
   },
   Mutation: {
@@ -95,13 +89,12 @@ const resolvers = {
       })
       return newBook.save()
     },
-    //TODO:
-    editAuthor: (root, args) => {
-      let author = authors.find((a) => a.name === args.author)
+    editAuthor: async (root, args) => {
+      const author = await Author.findOne({ name: args.author })
       if (!author) return null
-      author = { ...author, born: args.setBornTo }
-      authors = authors.map((a) => (a.id === author.id ? author : a))
-      return author
+
+      author.born = args.setBornTo
+      return author.save()
     },
   },
 }
