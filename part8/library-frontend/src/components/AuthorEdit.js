@@ -31,7 +31,7 @@ const AuthorEdit = ({ authors }) => {
           name:{' '}
           <select onChange={({ target }) => setName(target.value)}>
             {authors.map((a) => (
-              <option key={a.id}>{a.name}</option>
+              <option key={a.name}>{a.name}</option>
             ))}
           </select>
         </div>
