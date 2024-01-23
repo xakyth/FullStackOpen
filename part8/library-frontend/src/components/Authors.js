@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/client'
 import { ALL_AUTHORS } from '../gqlQueries'
 import AuthorEdit from './AuthorEdit'
 
-const Authors = () => {
+const Authors = ({ token }) => {
   const authorsQuery = useQuery(ALL_AUTHORS)
 
   if (authorsQuery.loading) {
@@ -28,7 +28,7 @@ const Authors = () => {
           ))}
         </tbody>
       </table>
-      <AuthorEdit authors={authorsQuery.data.allAuthors} />
+      {token && <AuthorEdit authors={authorsQuery.data.allAuthors} />}
     </div>
   )
 }

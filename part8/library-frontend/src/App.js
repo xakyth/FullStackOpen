@@ -37,9 +37,11 @@ const App = () => {
         <Link style={paddingRight} to={'/books'}>
           books
         </Link>
-        <Link style={paddingRight} to={'/addBook'}>
-          add book
-        </Link>
+        {token && (
+          <Link style={paddingRight} to={'/addBook'}>
+            add book
+          </Link>
+        )}
         {!token ? (
           <Link style={paddingRight} to={'/login'}>
             login
@@ -51,9 +53,9 @@ const App = () => {
 
       <Routes>
         <Route path='/' element={<p>Hello World!</p>} />
-        <Route path='/authors' element={<Authors />} />
+        <Route path='/authors' element={<Authors token={token} />} />
         <Route path='/books' element={<Books />} />
-        <Route path='/addBook' element={<NewBook />} />
+        <Route path='/addBook' element={<NewBook token={token} />} />
         <Route path='/login' element={<LoginForm setToken={setToken} />} />
       </Routes>
     </div>

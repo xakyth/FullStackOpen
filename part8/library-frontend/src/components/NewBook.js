@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/client'
 import { useState } from 'react'
 import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS } from '../gqlQueries'
 
-const NewBook = () => {
+const NewBook = ({ token }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [published, setPublished] = useState('')
@@ -30,6 +30,8 @@ const NewBook = () => {
     setGenres(genres.concat(genre))
     setGenre('')
   }
+
+  if (!token) return null
 
   return (
     <div>
