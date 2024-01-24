@@ -5,17 +5,23 @@ import { useEffect, useState } from 'react'
 const Books = () => {
   const [filter, setFilter] = useState(null)
   const [genres, setGenres] = useState(new Set())
+  const [books, setBooks] = useState([])
   const booksQuery = useQuery(ALL_BOOKS)
 
   useEffect(() => {
     if (booksQuery.data) {
-      let tempSet = new Set()
-      booksQuery.data.allBooks.forEach((b) => {
-        b.genres.forEach((g) => tempSet.add(g))
+      let tempGenres = new Set(genres)
+      booksQuery.data.allBooks.map((b) => {
+        tempGenres = new Set([...tempGenres, ...b.genres])
       })
-      setGenres(tempSet)
+      setGenres(tempGenres)
+      setBooks(booksQuery.data.allBooks)
     }
   }, [booksQuery.data])
+
+  useEffect(() => {
+    booksQuery.refetch({ genre: filter })
+  }, [filter])
 
   if (booksQuery.loading) return <div>loading...</div>
 
@@ -30,17 +36,15 @@ const Books = () => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {booksQuery.data.allBooks
-            .filter((b) => (filter ? b.genres.includes(filter) : true))
-            .map((a) => {
-              return (
-                <tr key={a.title}>
-                  <td>{a.title}</td>
-                  <td>{a.author.name}</td>
-                  <td>{a.published}</td>
-                </tr>
-              )
-            })}
+          {books.map((a) => {
+            return (
+              <tr key={a.title}>
+                <td>{a.title}</td>
+                <td>{a.author.name}</td>
+                <td>{a.published}</td>
+              </tr>
+            )
+          })}
         </tbody>
       </table>
       <div>
