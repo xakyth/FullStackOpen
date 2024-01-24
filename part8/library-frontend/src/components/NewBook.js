@@ -9,7 +9,9 @@ const NewBook = ({ token }) => {
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
-  const [createBook] = useMutation(ADD_BOOK)
+  const [createBook] = useMutation(ADD_BOOK, {
+    refetchQueries: [{ query: ALL_BOOKS }],
+  })
 
   const submit = async (event) => {
     event.preventDefault()
