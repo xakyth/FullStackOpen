@@ -3,6 +3,9 @@ const { GraphQLError } = require('graphql')
 const Book = require('./models/book')
 const Author = require('./models/author')
 const User = require('./models/user')
+const { PubSub } = require('graphql-subscriptions')
+
+const pubsub = new PubSub()
 
 const resolvers = {
   Author: {
@@ -70,6 +73,11 @@ const resolvers = {
       })
       try {
         newBook = newBook.save().then((b) => b.populate('author'))
+
+        pubsub.publish('BOOK_ADDED', {
+          bookAdded: newBook,
+        })
+
         return newBook
       } catch (error) {
         throw new GraphQLError('Failed to add a book', {
@@ -122,6 +130,11 @@ const resolvers = {
         id: user._id,
       }
       return { value: jwt.sign(userForToken, process.env.JWT_SECRET) }
+    },
+  },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator(['BOOK_ADDED']),
     },
   },
 }
