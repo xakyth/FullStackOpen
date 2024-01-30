@@ -4,13 +4,20 @@ import Books from './components/Books'
 import NewBook from './components/NewBook'
 import { Link, Route, Routes } from 'react-router-dom'
 import LoginForm from './components/LoginForm'
-import { useApolloClient } from '@apollo/client'
+import { useApolloClient, useSubscription } from '@apollo/client'
 import Recommendations from './components/Recommendations'
+import { BOOK_ADDED } from './gqlQueries'
 
 const App = () => {
   const [token, setToken] = useState(null)
 
   const client = useApolloClient()
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      const book = data.data.bookAdded
+      window.alert(`${book.title} by ${book.author.name} added!`)
+    },
+  })
 
   useEffect(() => {
     const token = localStorage.getItem('library-part8-user-token')
