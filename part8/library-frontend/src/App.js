@@ -16,6 +16,9 @@ const App = () => {
     onData: ({ data }) => {
       const book = data.data.bookAdded
       window.alert(`${book.title} by ${book.author.name} added!`)
+      client.refetchQueries({
+        include: ['allBooks'],
+      })
     },
   })
 
