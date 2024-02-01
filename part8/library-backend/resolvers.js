@@ -10,8 +10,8 @@ const pubsub = new PubSub()
 
 const resolvers = {
   Author: {
-    bookCount: async (root) => {
-      const books = await Book.find({ author: root._id })
+    bookCount: async (rootObj) => {
+      const books = rootObj.books
       return books.length
     },
   },
@@ -36,7 +36,7 @@ const resolvers = {
       return Book.find(filter).populate('author')
     },
     allAuthors: async () => {
-      return Author.find({})
+      return Author.find({}).populate('books')
     },
     me: async (root, args, { currentUser }) => {
       return currentUser
@@ -73,7 +73,11 @@ const resolvers = {
         author: author._id,
       })
       try {
-        newBook = newBook.save().then((b) => b.populate('author'))
+        newBook = await newBook.save()
+        newBook = await newBook.populate('author')
+
+        author.books = author.books.concat(newBook.id)
+        вawait author.save()
 
         pubsub.publish('BOOK_ADDED', {
           bookAdded: newBook,
