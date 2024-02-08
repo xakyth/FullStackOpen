@@ -1,3 +1,23 @@
+import { isNumber } from './util';
+
+interface HeightWeight {
+  height: number;
+  weight: number;
+}
+
+const parseArgs = (): HeightWeight => {
+  if (process.argv.length < 4) throw new Error('too few arguments');
+  if (process.argv.length > 4) throw new Error('too many arguments');
+
+  if (!isNumber(process.argv[2]) || !isNumber(process.argv[3]))
+    throw new Error('provided arguments were not numbers');
+
+  return {
+    height: Number(process.argv[2]),
+    weight: Number(process.argv[3]),
+  };
+};
+
 const calculateBmi = (height: number, weight: number): string => {
   const heightInMeters: number = height / 100;
 
@@ -22,4 +42,14 @@ const calculateBmi = (height: number, weight: number): string => {
   }
 };
 
-console.log(calculateBmi(179, 66));
+try {
+  const { height, weight } = parseArgs();
+  console.log(calculateBmi(height, weight));
+} catch (error: unknown) {
+  let errorMessage = 'Something bad happened.';
+  if (error instanceof Error) {
+    errorMessage += ` Error: ${error.message}`;
+  }
+  4;
+  console.log(errorMessage);
+}

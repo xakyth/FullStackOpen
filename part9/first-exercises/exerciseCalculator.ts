@@ -1,3 +1,5 @@
+import { isNumber } from './util';
+
 interface ExercisesReport {
   periodLength: number;
   trainingDays: number;
@@ -7,6 +9,30 @@ interface ExercisesReport {
   target: number;
   average: number;
 }
+
+interface ExercisesData {
+  targetAverageHoursPerDay: number;
+  hoursPerDay: number[];
+}
+
+const parseArgs = (): ExercisesData => {
+  if (process.argv.length < 4) throw new Error('too few arguments!');
+
+  if (!isNumber(process.argv[2]))
+    throw new Error('target average hours per day should be a number!');
+  const targetAverageHoursPerDay = Number(process.argv[2]);
+
+  const hoursPerDay: number[] = [];
+  for (let i = 3; i < process.argv.length; i++) {
+    if (!isNumber(process.argv[i]))
+      throw new Error('hours per day should be a number');
+    hoursPerDay.push(Number(process.argv[i]));
+  }
+  return {
+    targetAverageHoursPerDay,
+    hoursPerDay,
+  };
+};
 
 const calculateExercises = (
   hoursPerDay: number[],
@@ -42,4 +68,13 @@ const calculateExercises = (
   return result;
 };
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+try {
+  const { targetAverageHoursPerDay, hoursPerDay } = parseArgs();
+  console.log(calculateExercises(hoursPerDay, targetAverageHoursPerDay));
+} catch (error: unknown) {
+  let errorMessage = 'Something bad happened.';
+  if (error instanceof Error) {
+    errorMessage += ` Error: ${error.message}`;
+  }
+  console.log(errorMessage);
+}
