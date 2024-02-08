@@ -1,6 +1,6 @@
 import { isNumber } from './util';
 
-interface ExercisesReport {
+export interface ExercisesReport {
   periodLength: number;
   trainingDays: number;
   success: boolean;
@@ -34,7 +34,7 @@ const parseArgs = (): ExercisesData => {
   };
 };
 
-const calculateExercises = (
+export const calculateExercises = (
   hoursPerDay: number[],
   targetAverageHoursPerDay: number
 ): ExercisesReport => {
