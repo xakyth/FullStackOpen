@@ -52,7 +52,7 @@ const calculateExercises = (
   else if (rating < 3) ratingDescription = 'not too bad but could be better';
   else ratingDescription = 'congratulations you reach the goal';
 
-  let result: ExercisesReport = {
+  const result: ExercisesReport = {
     periodLength: hoursPerDay.length,
     trainingDays: hoursPerDay.reduce(
       (acc, hours) => (acc += hours > 0 ? 1 : 0),
