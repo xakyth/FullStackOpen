@@ -10,10 +10,10 @@ interface NewEntryProps {
 }
 
 const NewEntry = ({ entries, setEntries, setNotification }: NewEntryProps) => {
-  const [date, setDate] = useState('2023-2-2');
-  const [visibility, setVisibility] = useState('best ever');
-  const [weather, setWeather] = useState('sunny');
-  const [comment, setComment] = useState('night flight but a shaky land');
+  const [date, setDate] = useState('');
+  const [visibility, setVisibility] = useState('');
+  const [weather, setWeather] = useState('');
+  const [comment, setComment] = useState('');
 
   const entryCreation = (event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -49,26 +49,44 @@ const NewEntry = ({ entries, setEntries, setNotification }: NewEntryProps) => {
         <div>
           date{' '}
           <input
-            type='text'
+            type='date'
             value={date}
             onChange={({ target }) => setDate(target.value)}
           ></input>
         </div>
         <div>
-          visibility{' '}
-          <input
-            type='text'
-            value={visibility}
-            onChange={({ target }) => setVisibility(target.value)}
-          ></input>
+          visibility:{' '}
+          {Object.values(Visibility).map((v) => {
+            return (
+              <React.Fragment key={v.toString()}>
+                {' '}
+                {v.toString()}
+                <input
+                  type='radio'
+                  name='visibility'
+                  onChange={({ target }) => setVisibility(target.value)}
+                  value={v.toString()}
+                />
+              </React.Fragment>
+            );
+          })}
         </div>
         <div>
-          weather{' '}
-          <input
-            type='text'
-            value={weather}
-            onChange={({ target }) => setWeather(target.value)}
-          ></input>
+          weather{': '}
+          {Object.values(Weather).map((v) => {
+            return (
+              <React.Fragment key={v.toString()}>
+                {' '}
+                {v.toString()}
+                <input
+                  type='radio'
+                  name='weather'
+                  value={v.toString()}
+                  onChange={({ target }) => setWeather(target.value)}
+                />
+              </React.Fragment>
+            );
+          })}
         </div>
         <div>
           comment{' '}
