@@ -1,7 +1,7 @@
 import { NewPatient, NonSensitivePatient, Patient } from '../types';
 import { v1 as uuid } from 'uuid';
 
-import patients from '../../data/patients';
+import patients from '../../data/patientsFull';
 
 const findById = (id: string): Patient | undefined => {
   const patient = patients.find((p) => p.id === id);
