@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { Gender, Patient } from '../types';
+import { Diagnosis, Gender, Patient } from '../types';
 import patientsService from '../services/patients';
 import { useEffect, useState } from 'react';
 
@@ -16,7 +16,17 @@ const getGenderSymbol = (gender: Gender): string => {
   }
 };
 
-const PatientPage = () => {
+const getDiagnosisName = (code: string, diagnoses: Diagnosis[]) => {
+  const diagnosisName = diagnoses.find((d) => d.code === code);
+  if (!diagnosisName) return '';
+  return diagnosisName.name;
+};
+
+interface Props {
+  diagnoses: Diagnosis[];
+}
+
+const PatientPage = (props: Props) => {
   const [patient, setPatient] = useState<Patient | undefined>(undefined);
   const { id } = useParams();
 
@@ -44,7 +54,11 @@ const PatientPage = () => {
               {entry.diagnosisCodes && (
                 <ul>
                   {entry.diagnosisCodes.map((dc) => {
-                    return <li key={dc}>{dc}</li>;
+                    return (
+                      <li key={dc}>
+                        {dc} {getDiagnosisName(dc, props.diagnoses)}
+                      </li>
+                    );
                   })}
                 </ul>
               )}
