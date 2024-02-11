@@ -10,6 +10,7 @@ const Entry = ({ entry }: DiaryEntryProps) => {
       <h2>{entry.date}</h2>
       <div>visibility: {entry.visibility}</div>
       <div>weather: {entry.weather}</div>
+      {entry.comment && <div>comment: {entry.comment}</div>}
     </div>
   );
 };
