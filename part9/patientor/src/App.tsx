@@ -8,6 +8,7 @@ import { Patient } from "./types";
 
 import patientService from "./services/patients";
 import PatientListPage from "./components/PatientListPage";
+import PatientPage from './components/PatientPage';
 
 const App = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -23,18 +24,27 @@ const App = () => {
   }, []);
   
   return (
-    <div className="App">
+    <div className='App'>
       <Router>
         <Container>
-          <Typography variant="h3" style={{ marginBottom: "0.5em" }}>
+          <Typography variant='h3' style={{ marginBottom: '0.5em' }}>
             Patientor
           </Typography>
-          <Button component={Link} to="/" variant="contained" color="primary">
+          <Button component={Link} to='/' variant='contained' color='primary'>
             Home
           </Button>
           <Divider hidden />
           <Routes>
-            <Route path="/" element={<PatientListPage patients={patients} setPatients={setPatients} />} />
+            <Route
+              path='/'
+              element={
+                <PatientListPage
+                  patients={patients}
+                  setPatients={setPatients}
+                />
+              }
+            />
+            <Route path='/patients/:id' element={<PatientPage />} />
           </Routes>
         </Container>
       </Router>
