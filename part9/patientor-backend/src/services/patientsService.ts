@@ -3,6 +3,11 @@ import { v1 as uuid } from 'uuid';
 
 import patients from '../../data/patients';
 
+const findById = (id: string): Patient | undefined => {
+  const patient = patients.find((p) => p.id === id);
+  return patient;
+};
+
 const getEntries = (): Patient[] => {
   return patients;
 };
@@ -32,4 +37,5 @@ export default {
   getEntries,
   getNonSensitiveEntries,
   addPatient,
+  findById,
 };
