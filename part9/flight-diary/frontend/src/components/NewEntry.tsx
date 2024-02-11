@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import diaryService from '../services/diaryService';
 import { DiaryEntry, NewDiaryEntry, Visibility, Weather } from '../types';
+import { AxiosError } from 'axios';
 
 interface NewEntryProps {
   entries: DiaryEntry[];
   setEntries: React.Dispatch<React.SetStateAction<DiaryEntry[]>>;
+  setNotification: (message: string) => void;
 }
 
-const NewEntry = ({ entries, setEntries }: NewEntryProps) => {
+const NewEntry = ({ entries, setEntries, setNotification }: NewEntryProps) => {
   const [date, setDate] = useState('2023-2-2');
   const [visibility, setVisibility] = useState('best ever');
   const [weather, setWeather] = useState('sunny');
@@ -17,13 +19,27 @@ const NewEntry = ({ entries, setEntries }: NewEntryProps) => {
     event.preventDefault();
     const newEntry: NewDiaryEntry = {
       date,
-      visibility: Visibility.Great,
-      weather: Weather.Cloudy,
+      visibility: visibility as Visibility,
+      weather: weather as Weather,
       comment,
     };
-    diaryService.addEntry(newEntry).then((addedEntry) => {
-      setEntries(entries.concat(addedEntry));
-    });
+    diaryService
+      .addEntry(newEntry)
+      .then((addedEntry) => {
+        setEntries(entries.concat(addedEntry));
+        setDate('');
+        setVisibility('');
+        setWeather('');
+        setComment('');
+      })
+      .catch((error: unknown) => {
+        if (error instanceof AxiosError) {
+          const errorMessage = error.response?.data;
+          setNotification(errorMessage);
+        } else {
+          setNotification('Unknown error');
+        }
+      });
   };
 
   return (
