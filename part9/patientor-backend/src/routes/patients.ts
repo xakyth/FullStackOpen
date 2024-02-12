@@ -1,6 +1,7 @@
 import express from 'express';
 import patientsService from '../services/patientsService';
 import { toNewPatient } from '../utils';
+import { EntryWithoutId } from '../types';
 
 const router = express.Router();
 
@@ -30,6 +31,15 @@ router.post('/', (req, res) => {
     }
     res.status(400).send(errorMessage);
   }
+});
+
+router.post('/:id/entries', (req, res) => {
+  const { id } = req.params;
+  const newEntry: EntryWithoutId = req.body as EntryWithoutId;
+
+  const addedEntry = patientsService.addEntryToPatient(id, newEntry);
+
+  res.json(addedEntry);
 });
 
 export default router;
