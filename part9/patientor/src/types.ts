@@ -57,6 +57,12 @@ interface HospitalEntry extends BaseEntry {
   };
 }
 
+export enum EntryType {
+  Hospital = 'Hospital',
+  OccupationalHealthcare = 'OccupationalHealthcare',
+  HealthCheck = 'HealthCheck',
+}
+
 export type Entry =
   | HealthCheckEntry
   | OccupationalHealthcareEntry

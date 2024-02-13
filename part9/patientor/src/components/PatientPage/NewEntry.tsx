@@ -1,9 +1,20 @@
-import { Box, Button, TextField } from '@mui/material';
+import {
+  Box,
+  Button,
+  InputLabel,
+  NativeSelect,
+  TextField,
+  Typography,
+} from '@mui/material';
 import React, { useState } from 'react';
 import patientsService from '../../services/patients';
 import { useParams } from 'react-router-dom';
-import { EntryWithoutId, Patient } from '../../types';
-import { parseHealthCheckRating } from '../../utils';
+import { EntryType, EntryWithoutId, Patient } from '../../types';
+import {
+  assertNever,
+  parseEntryType,
+  parseHealthCheckRating,
+} from '../../utils';
 
 const containerStyle = { borderStyle: 'dashed', marginTop: 10, padding: 10 };
 
@@ -19,21 +30,64 @@ const NewEntry = (props: Props) => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [specialist, setSpecialist] = useState('');
-  const [rating, setRating] = useState('');
   const [diagnosisCodes, setDiagnosisCodes] = useState('');
+
+  const [entryType, setEntryType] = useState<EntryType>(EntryType.HealthCheck);
+
+  const [rating, setRating] = useState('');
+
+  const [employerName, setEmployerName] = useState('');
+  const [sickLeaveStartDate, setSickLeaveStartDate] = useState('');
+  const [sickLeaveEndDate, setSickLeaveEndDate] = useState('');
+
+  const [dischargeDate, setDischargeDate] = useState('');
+  const [dischargeCriteria, setDischargeCriteria] = useState('');
 
   if (!patientId) return null;
 
   const entryCreation = (event: React.SyntheticEvent) => {
     event.preventDefault();
 
-    const newEntry: EntryWithoutId = {
-      type: 'HealthCheck',
-      description,
-      date,
-      specialist,
-      healthCheckRating: parseHealthCheckRating(rating),
-    };
+    let newEntry: EntryWithoutId;
+    switch (entryType) {
+      case EntryType.HealthCheck:
+        newEntry = {
+          description,
+          date,
+          specialist,
+          type: entryType,
+          healthCheckRating: parseHealthCheckRating(rating),
+        };
+        break;
+      case EntryType.OccupationalHealthcare:
+        newEntry = {
+          description,
+          date,
+          specialist,
+          type: entryType,
+          employerName,
+          sickLeave: {
+            startDate: sickLeaveStartDate,
+            endDate: sickLeaveEndDate,
+          },
+        };
+        break;
+      case EntryType.Hospital:
+        newEntry = {
+          description,
+          date,
+          specialist,
+          type: entryType,
+          discharge: {
+            criteria: dischargeCriteria,
+            date: dischargeDate,
+          },
+        };
+        break;
+      default:
+        return assertNever(entryType);
+    }
+
     if (diagnosisCodes.length > 0) {
       newEntry.diagnosisCodes = diagnosisCodes.split(', ');
     }
@@ -54,9 +108,82 @@ const NewEntry = (props: Props) => {
       });
   };
 
+  const getFieldsBasedOnEntryType = () => {
+    switch (entryType) {
+      case EntryType.HealthCheck:
+        return (
+          <TextField
+            label='Healthcheck rating'
+            variant='standard'
+            value={rating}
+            onChange={({ target }) => setRating(target.value)}
+          />
+        );
+      case EntryType.OccupationalHealthcare:
+        return (
+          <div>
+            <TextField
+              label='Employer name'
+              variant='standard'
+              value={employerName}
+              onChange={({ target }) => setEmployerName(target.value)}
+            />
+            <Typography>Sickleave</Typography>
+            <TextField
+              label='start'
+              variant='standard'
+              value={sickLeaveStartDate}
+              onChange={({ target }) => setSickLeaveStartDate(target.value)}
+            />
+            <br />
+            <TextField
+              label='end'
+              variant='standard'
+              value={sickLeaveEndDate}
+              onChange={({ target }) => setSickLeaveEndDate(target.value)}
+            />
+          </div>
+        );
+      case EntryType.Hospital:
+        return (
+          <div>
+            <Typography>Sickleave</Typography>
+            <TextField
+              label='Date'
+              variant='standard'
+              value={dischargeDate}
+              onChange={({ target }) => setDischargeDate(target.value)}
+            />
+            <TextField
+              label='Criteria'
+              variant='standard'
+              value={dischargeCriteria}
+              onChange={({ target }) => setDischargeCriteria(target.value)}
+            />
+          </div>
+        );
+      default:
+        assertNever(entryType);
+    }
+  };
+
   return (
     <div style={containerStyle}>
-      <h3>New HealthCheck entry</h3>
+      <h3>New entry</h3>
+      <div>
+        <InputLabel variant='standard' htmlFor='uncontrolled-native'>
+          Entry Type
+        </InputLabel>
+        <NativeSelect
+          onChange={(event) => setEntryType(parseEntryType(event.target.value))}
+        >
+          <option value={EntryType.HealthCheck}>Health Check</option>
+          <option value={EntryType.OccupationalHealthcare}>
+            Occuapational Healthcare
+          </option>
+          <option value={EntryType.Hospital}>Hospital</option>
+        </NativeSelect>
+      </div>
       <form onSubmit={entryCreation}>
         <TextField
           label='Description'
@@ -80,18 +207,13 @@ const NewEntry = (props: Props) => {
         />
         <br />
         <TextField
-          label='Healthcheck rating'
-          variant='standard'
-          value={rating}
-          onChange={({ target }) => setRating(target.value)}
-        />
-        <br />
-        <TextField
           label='Diagnosis codes'
           variant='standard'
           value={diagnosisCodes}
           onChange={({ target }) => setDiagnosisCodes(target.value)}
         />
+        <br />
+        {getFieldsBasedOnEntryType()}
         <Box
           display='flex'
           justifyContent='space-between'

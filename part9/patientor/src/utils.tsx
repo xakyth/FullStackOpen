@@ -1,4 +1,4 @@
-import { Diagnosis, Gender, HealthCheckRating } from './types';
+import { Diagnosis, EntryType, Gender, HealthCheckRating } from './types';
 
 export const getGenderSymbol = (gender: Gender): string => {
   switch (gender) {
@@ -47,4 +47,16 @@ export const parseHealthCheckRating = (object: unknown): HealthCheckRating => {
   }
 
   return object;
+};
+
+export const parseEntryType = (object: string): EntryType => {
+  if (
+    !object ||
+    !Object.values(EntryType)
+      .map((e) => e.toString())
+      .includes(object)
+  ) {
+    throw new Error('Wrong entry type value: ' + object);
+  }
+  return object as EntryType;
 };
