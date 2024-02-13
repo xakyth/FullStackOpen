@@ -62,4 +62,11 @@ export type Entry =
   | OccupationalHealthcareEntry
   | HospitalEntry;
 
+// Define special omit for unionsd
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown
+  ? Omit<T, K>
+  : never;
+// Define Entry without the 'id' pwwwroperty
+export type EntryWithoutId = UnionOmit<Entry, 'id'>;
+
 export type PatientFormValues = Omit<Patient, 'id' | 'entries'>;

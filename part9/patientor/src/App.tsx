@@ -10,8 +10,10 @@ import patientService from './services/patients';
 import diagnosisService from './services/diagnoses';
 import PatientListPage from './components/PatientListPage';
 import PatientPage from './components/PatientPage';
+import Notification from './components/Notification';
 
 const App = () => {
+  const [notification, setNotification] = useState('');
   const [patients, setPatients] = useState<Patient[]>([]);
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
 
@@ -27,6 +29,13 @@ const App = () => {
     diagnosisService.getAll().then((res) => setDiagnoses(res));
   }, []);
 
+  const notifyWith = (message: string) => {
+    setNotification(message);
+    setTimeout(() => {
+      setNotification('');
+    }, 10000);
+  };
+
   return (
     <div className='App'>
       <Router>
@@ -37,6 +46,7 @@ const App = () => {
           <Button component={Link} to='/' variant='contained' color='primary'>
             Home
           </Button>
+          <Notification message={notification} />
           <Divider hidden />
           <Routes>
             <Route
@@ -50,7 +60,12 @@ const App = () => {
             />
             <Route
               path='/patients/:id'
-              element={<PatientPage diagnoses={diagnoses} />}
+              element={
+                <PatientPage
+                  setNotification={notifyWith}
+                  diagnoses={diagnoses}
+                />
+              }
             />
           </Routes>
         </Container>

@@ -5,9 +5,11 @@ import { useEffect, useState } from 'react';
 
 import { getGenderSymbol } from '../../utils';
 import EntryDetails from './EntryDetails';
+import NewEntry from './NewEntry';
 
 interface Props {
   diagnoses: Diagnosis[];
+  setNotification: (message: string) => void;
 }
 
 const PatientPage = (props: Props) => {
@@ -21,7 +23,6 @@ const PatientPage = (props: Props) => {
   if (!patient) {
     return null;
   }
-
   return (
     <div>
       <h2>
@@ -29,6 +30,11 @@ const PatientPage = (props: Props) => {
       </h2>
       <div>ssn: {patient.ssn}</div>
       <div>occupation: {patient.occupation}</div>
+      <NewEntry
+        setNotification={props.setNotification}
+        setPatient={setPatient}
+        patient={patient}
+      />
       <h3>entries</h3>
       {patient.entries.map((e) => {
         return (
