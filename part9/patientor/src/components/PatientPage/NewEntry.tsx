@@ -1,15 +1,29 @@
 import {
   Box,
   Button,
+  Checkbox,
+  FormControl,
+  Input,
   InputLabel,
+  ListItemText,
+  MenuItem,
   NativeSelect,
+  OutlinedInput,
+  Select,
+  SelectChangeEvent,
   TextField,
   Typography,
 } from '@mui/material';
 import React, { useState } from 'react';
 import patientsService from '../../services/patients';
 import { useParams } from 'react-router-dom';
-import { EntryType, EntryWithoutId, Patient } from '../../types';
+import {
+  Diagnosis,
+  EntryType,
+  EntryWithoutId,
+  HealthCheckRating,
+  Patient,
+} from '../../types';
 import {
   assertNever,
   parseEntryType,
@@ -17,11 +31,22 @@ import {
 } from '../../utils';
 
 const containerStyle = { borderStyle: 'dashed', marginTop: 10, padding: 10 };
+const ITEM_HEIGHT = 30;
+const ITEM_PADDING_TOP = 4;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 500,
+    },
+  },
+};
 
 interface Props {
   setNotification: (message: string) => void;
   patient: Patient;
   setPatient: React.Dispatch<React.SetStateAction<Patient | undefined>>;
+  diagnoses: Diagnosis[];
 }
 
 const NewEntry = (props: Props) => {
@@ -30,7 +55,7 @@ const NewEntry = (props: Props) => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [specialist, setSpecialist] = useState('');
-  const [diagnosisCodes, setDiagnosisCodes] = useState('');
+  const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
 
   const [entryType, setEntryType] = useState<EntryType>(EntryType.HealthCheck);
 
@@ -89,7 +114,7 @@ const NewEntry = (props: Props) => {
     }
 
     if (diagnosisCodes.length > 0) {
-      newEntry.diagnosisCodes = diagnosisCodes.split(', ');
+      newEntry.diagnosisCodes = diagnosisCodes;
     }
 
     patientsService
@@ -112,12 +137,19 @@ const NewEntry = (props: Props) => {
     switch (entryType) {
       case EntryType.HealthCheck:
         return (
-          <TextField
-            label='Healthcheck rating'
-            variant='standard'
-            value={rating}
-            onChange={({ target }) => setRating(target.value)}
-          />
+          <div>
+            <InputLabel variant='standard' htmlFor='uncontrolled-native'>
+              Health Rating
+            </InputLabel>
+            <NativeSelect onChange={({ target }) => setRating(target.value)}>
+              <option value={HealthCheckRating.Healthy}>Healthy</option>
+              <option value={HealthCheckRating.LowRisk}>Low Risk</option>
+              <option value={HealthCheckRating.HighRisk}>High Risk</option>
+              <option value={HealthCheckRating.CriticalRisk}>
+                Critical Risk
+              </option>
+            </NativeSelect>
+          </div>
         );
       case EntryType.OccupationalHealthcare:
         return (
@@ -129,16 +161,16 @@ const NewEntry = (props: Props) => {
               onChange={({ target }) => setEmployerName(target.value)}
             />
             <Typography>Sickleave</Typography>
-            <TextField
-              label='start'
-              variant='standard'
+            <InputLabel htmlFor='sickleave-start-date'>start</InputLabel>
+            <Input
+              type='date'
               value={sickLeaveStartDate}
               onChange={({ target }) => setSickLeaveStartDate(target.value)}
             />
             <br />
-            <TextField
-              label='end'
-              variant='standard'
+            <InputLabel htmlFor='sickleave-end-date'>end</InputLabel>
+            <Input
+              type='date'
               value={sickLeaveEndDate}
               onChange={({ target }) => setSickLeaveEndDate(target.value)}
             />
@@ -147,13 +179,14 @@ const NewEntry = (props: Props) => {
       case EntryType.Hospital:
         return (
           <div>
-            <Typography>Sickleave</Typography>
-            <TextField
-              label='Date'
-              variant='standard'
+            <Typography>Discharge</Typography>
+            <InputLabel htmlFor='discharge-date'>Date</InputLabel>
+            <Input
+              type='date'
               value={dischargeDate}
               onChange={({ target }) => setDischargeDate(target.value)}
             />
+            <br />
             <TextField
               label='Criteria'
               variant='standard'
@@ -165,6 +198,15 @@ const NewEntry = (props: Props) => {
       default:
         assertNever(entryType);
     }
+  };
+
+  const handleDiagnosisCodesChange = (
+    event: SelectChangeEvent<typeof diagnosisCodes>
+  ) => {
+    const {
+      target: { value },
+    } = event;
+    setDiagnosisCodes(typeof value === 'string' ? value.split(',') : value);
   };
 
   return (
@@ -192,9 +234,10 @@ const NewEntry = (props: Props) => {
           onChange={({ target }) => setDescription(target.value)}
         />
         <br />
-        <TextField
-          label='Date'
-          variant='standard'
+        <InputLabel htmlFor='new-entry-date'>Date</InputLabel>
+        <Input
+          id='new-entry-datea'
+          type='date'
           value={date}
           onChange={({ target }) => setDate(target.value)}
         />
@@ -206,12 +249,30 @@ const NewEntry = (props: Props) => {
           onChange={({ target }) => setSpecialist(target.value)}
         />
         <br />
-        <TextField
-          label='Diagnosis codes'
-          variant='standard'
-          value={diagnosisCodes}
-          onChange={({ target }) => setDiagnosisCodes(target.value)}
-        />
+        <FormControl sx={{ width: 200 }}>
+          <InputLabel htmlFor='diagnosis-codes' id='diagnosis-codes-label'>
+            Diagnosis Codes
+          </InputLabel>
+          <Select
+            id='diagnosis-codes'
+            labelId='diagnosis-codes-label'
+            multiple
+            value={diagnosisCodes}
+            onChange={handleDiagnosisCodesChange}
+            input={<OutlinedInput label='Diagnosis Codes' />}
+            renderValue={(selected) => selected.join(', ')}
+            MenuProps={MenuProps}
+          >
+            {props.diagnoses.map((d) => {
+              return (
+                <MenuItem key={d.code} value={d.code}>
+                  <Checkbox checked={diagnosisCodes.indexOf(d.code) > -1} />
+                  <ListItemText primary={`${d.code} ${d.name}`} />
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
         <br />
         {getFieldsBasedOnEntryType()}
         <Box

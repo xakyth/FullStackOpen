@@ -34,6 +34,7 @@ const PatientPage = (props: Props) => {
         setNotification={props.setNotification}
         setPatient={setPatient}
         patient={patient}
+        diagnoses={props.diagnoses}
       />
       <h3>entries</h3>
       {patient.entries.map((e) => {
